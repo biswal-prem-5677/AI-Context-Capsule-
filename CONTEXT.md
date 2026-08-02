@@ -2,9 +2,37 @@
 
 ## Current sprint
 
-**Sprint:** Documentation blueprint complete — awaiting product-owner review and explicit implementation authorization.  
-**Phase:** Product, engineering, and delivery design complete; no production application code or deployment exists.  
-**Current priority:** Resolve launch-gating decisions, approve this blueprint, then begin Milestone 0 only.
+**Sprint:** Milestone 0 — Verified foundation. Engineering deliverables complete; one owner-dependent item remains.  
+**Phase:** Workspace, quality gates, the capsule v1 schema package, CI workflows, and contribution templates exist and are verified locally. Branch protection requires the repository owner, so M0 is not formally closed.  
+**Current priority:** Confirm the first CI run is green on GitHub and have the repository owner apply branch protection and labels, then begin Milestone 1.
+
+## Milestone 0 status
+
+| Deliverable | State |
+| --- | --- |
+| pnpm workspace, strict TypeScript, lint/format/test/build scripts | Done — `pnpm verify` green |
+| `capsule-schema` package: types, limits, issues, text, validate, json-codec, version, operations, fixtures | Done — 182 unit tests pass |
+| Package-boundary enforcement (Document 14 §2) | Done — typecheck program split plus `no-restricted-globals` backstop |
+| `.env.example`, `.gitignore`, editor/format config | Done |
+| CI workflows (Document 15 §5) | Done locally — `quality.yml`, `docs.yml`, `security.yml`. **Not yet observed green on GitHub** |
+| Issue/PR templates, security policy (Document 15 §2/§4) | Done — 5 issue forms, `config.yml`, `pull_request_template.md`, `.github/SECURITY.md` |
+| README reflects real status and commands | Done |
+| Branch protection / required checks | **Not started** — requires repository owner |
+| Issue labels (Document 15 §4) | **Not created** — requires repository owner; templates reference them already |
+
+M0 acceptance criterion "CI green" is evidenced only after the first workflow run succeeds on GitHub. Local gate results are recorded under Commands below; a local pass is not a CI pass.
+
+### CI scope deferred on purpose
+
+Document 15 §5 lists six workflows. Three are implemented now; the rest are deferred to the milestone that creates the thing they would test, because a workflow with nothing to run is a green check that means nothing:
+
+| Workflow | Deferred to | Reason |
+| --- | --- | --- |
+| `integration.yml` | M1 (IndexedDB), M5 (API/RLS) | No repository, adapter fixtures, or API exist yet |
+| `e2e.yml` | M2 | No extension to drive; `pnpm test:e2e` still exits non-zero by design |
+| `release.yml` | M4 | No packaged artifact to build, checksum, or publish |
+
+`security.yml` currently covers dependency advisories and a committed-secret file check. Manifest permission diffing arrives with the extension in M2. GitHub-native secret scanning and push protection are repository settings the owner enables; they are not simulated in CI.
 
 ## Completed documentation
 
@@ -29,16 +57,18 @@
 | Approve/refine the 1A scope and 1B/1C gates | Product owner | Implementation start |
 | Smart-draft provider, economics, retention, and consent copy — or defer 1C | Product/legal owner | 1C only |
 | Whether 1B sync ships in first public beta | Product owner | 1B planning/release |
-| Legal entity, privacy policy, support contact, Chrome Web Store account | Business owner | Public release |
+| Legal entity, privacy policy, support contact, security contact address, Chrome Web Store account | Business owner | Public release |
+| Repository license — currently `UNLICENSED`/all rights reserved, stated as such in README | Business owner | Any external contribution or reuse |
 | Supabase/Vercel account ownership, regions, backup policy, OAuth details | Technical owner | 1B deployment |
 
 ## Next tasks — strict order
 
-1. Review Documents 01–05 and confirm product scope/positioning decisions.
-2. Review Documents 06–12 with engineering/security owner; log any accepted changes in this file and relevant numbered document.
-3. Configure repository remote, branch protection, ownership, and issue/project tracking per Document 15.
-4. Begin Document 20 Milestone 0: scaffold workspace, schema, quality gates, and CI — only after approval.
-5. Do not build dashboard sync or smart drafting before 1A evidence and their explicit gates.
+1. Confirm the first `quality`, `docs`, and `security` workflow runs are green on GitHub; fix anything the runner surfaces that local gates could not.
+2. Configure branch protection, required checks, issue labels, and project tracking per Document 15 — needs the repository owner. Until branch protection exists, bootstrap direct pushes to `main` remain permitted by Document 15 §7.
+3. Review Documents 01–05 and confirm product scope/positioning decisions.
+4. Review Documents 06–12 with engineering/security owner; log any accepted changes in this file and the relevant numbered document.
+5. Begin Milestone 1 (Local Capsule Engine) only after M0 is complete and CI is green.
+6. Do not build dashboard sync or smart drafting before 1A evidence and their explicit gates.
 
 ## Current priorities
 
@@ -57,6 +87,10 @@
 | AD-04 | Sync is owner-scoped optional 1B | Completion/privacy; [02 §3.2](docs/02_product_requirements_document.md) |
 | AD-05 | Smart draft is opt-in 1C only | Cost/privacy/quality; [02 §7 F-08](docs/02_product_requirements_document.md) |
 | AD-06 | Never auto-send/overwrite a draft | Trust and safety; [02 §7 F-06](docs/02_product_requirements_document.md) |
+| AD-07 | `pnpm typecheck` runs two separate type programs | Importing `vitest` pulls `@types/node` globals into whatever program contains it, which would grant `process`/`Buffer` to platform-neutral packages. Shipped source checks Node-free; tests/tooling check with `types: ["node"]`. See `tsconfig.typecheck.json`; [14 §2](docs/14_project_structure.md) |
+| AD-08 | `capsule-schema` reads WHATWG globals off `globalThis` through narrow local interfaces | `TextEncoder`/`URL`/`crypto` exist in every target runtime but are typed only in `lib.dom`/`@types/node`; loading either would also grant `fetch`, `localStorage`, and `document` to the portable contract package. See `src/text.ts`, `src/operations.ts`; [14 §2](docs/14_project_structure.md) |
+| AD-09 | Document link checking is a local offline script, not a third-party link-checker action | `scripts/check-doc-links.mjs` resolves relative links against the filesystem and never requests an external URL. A checker that hits live URLs fails on someone else's outage, and a red build carrying no information about this repository trains reviewers to ignore CI. It also needs no dependency install. Verified in both directions: passes on the current tree, fails on an injected broken link; [15 §5](docs/15_github_workflow.md) |
+| AD-10 | CI installs pnpm through Corepack rather than a third-party setup action | `packageManager` in `package.json` already pins pnpm `11.18.0`, so Corepack reproduces the local version with no extra action in the supply chain. `actions/setup-node` runs *before* `corepack enable` so the shim is installed against the Node version the job actually uses; [15 §5](docs/15_github_workflow.md), [14 §6](docs/14_project_structure.md) |
 
 ## Important constraints
 
@@ -75,7 +109,11 @@
 
 ## Known bugs
 
-None. There is no application code yet. Do not interpret this as production readiness.
+None open. The only code is `capsule-schema` plus repository tooling in `scripts/`; there is no extension, adapter, UI, or deployment yet. Do not interpret green gates as production readiness.
+
+The three CI workflows have passed no run on GitHub at the time of writing — they are verified only insofar as their YAML parses and each command they invoke passes locally. Treat the first run as the actual test of them.
+
+Fixed during M0 (2026-08-02): `pnpm build` and `pnpm lint` failed on unresolved `TextEncoder`/`URL` in `capsule-schema`, while `pnpm typecheck` passed on the same code — the root typecheck config saw `node_modules/@types` and the per-package build config did not. Resolved by AD-07 and AD-08. Guarded by a negative check: adding `process.env`/`Buffer` to `capsule-schema` now fails both `pnpm typecheck` and `pnpm lint`.
 
 ## Technical debt
 
@@ -92,7 +130,27 @@ None accepted. Any deliberate short-term deviation from a numbered specification
 
 ## Commands
 
-No application workspace exists yet. The intended commands after Milestone 0 are documented in [Document 18](docs/18_installation.md). Record actual verified commands, tool versions, deployment URLs (non-secret), and release tag here once implementation begins.
+Verified on Node 22.18.0 / pnpm 11.18.0 (Windows 11), 2026-08-02. Each gate was run individually via `corepack pnpm <script>` — see the environment note below — and each exited 0.
+
+| Command | Result |
+| --- | --- |
+| `pnpm format:check` | Pass — all files match Prettier style, including `.github/**` YAML |
+| `pnpm lint` | Pass — 0 problems |
+| `pnpm typecheck` | Pass — both type programs (see AD-07) |
+| `pnpm test` | Pass — 5 files, 182 tests |
+| `pnpm build` | Pass — `tsc -b` emits `packages/capsule-schema/dist` |
+| `pnpm check:docs` | Pass — 33 Markdown files scanned, 31 relative link targets resolved |
+| `pnpm verify` | The six above, sequenced. Not run as a single chained command on this machine (see environment note); every constituent gate passed individually |
+
+Not yet available; these exit non-zero on purpose with the owning milestone (`scripts/not-implemented.mjs`): `dev:extension` (M2), `test:e2e` (M2), `package:extension` (M4), `dev:dashboard` (M5).
+
+Environment note: pnpm is provided through Corepack and may not be on `PATH` as a bare `pnpm` binary. `corepack pnpm <script>` works for individual scripts, but `pnpm verify` chains `pnpm` internally and needs a real `pnpm` on `PATH` — run `corepack enable` once. On this Windows machine `corepack enable` fails with `EPERM ... C:\Program Files\nodejs\yarn` because it writes shims next to the Node installation; it needs an elevated shell. This is a local environment setup step, not a repository defect, and it does not affect CI, where the `quality` workflow runs `corepack enable` on a Linux runner before installing.
+
+## Delivery state
+
+Remote: `origin` → `https://github.com/biswal-prem-5677/AI-Context-Capsule-.git`, branch `main`.
+
+Branch protection is not configured yet, so Document 15 §7 bootstrap direct pushes to `main` still apply. This allowance ends the moment the owner enables protection; record that transition here when it happens and move to the PR workflow. The `gh` CLI is not installed in the current environment, so labels and branch protection could not be applied from here — both remain owner actions.
 
 ## Developer notes
 
