@@ -1,0 +1,27 @@
+{
+  "name": "@context-capsule/capsule-schema",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Canonical Context Capsule envelope: types, runtime validation, normalization, and JSON codec (Document 10).",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./fixtures": {
+      "types": "./dist/fixtures/index.d.ts",
+      "default": "./dist/fixtures/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "//": "Build, typecheck, and test are orchestrated from the repository root so that a single tsc invocation covers every package. See root package.json.",
+  "dependencies": {},
+  "devDependencies": {}
+}
