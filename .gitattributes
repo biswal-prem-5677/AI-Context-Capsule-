@@ -1,0 +1,8 @@
+# Normalize to LF in the repository. Capsule JSON/Markdown codecs normalize line
+# endings to LF (Document 10 §4.3); committed fixtures must match byte-for-byte.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.zip binary
+pnpm-lock.yaml -diff linguist-generated

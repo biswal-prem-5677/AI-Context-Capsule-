@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "Solution file for `pnpm build`. Add one reference per buildable package.",
+  "files": [],
+  "references": [{ "path": "./packages/capsule-schema/tsconfig.build.json" }]
+}

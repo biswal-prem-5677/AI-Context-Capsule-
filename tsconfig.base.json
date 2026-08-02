@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": [
+    "`types: []` is empty on purpose. Left unset, TypeScript ambiently loads every",
+    "`@types/*` package it finds while walking up to the workspace root, which silently",
+    "grants `process`, `Buffer`, and the rest of the Node surface to packages that must",
+    "stay platform-neutral (Document 14 §2). It also made `tsc -p tsconfig.typecheck.json`",
+    "(root, sees root `node_modules/@types`) disagree with `tsc -b` (per-package, does",
+    "not), so one gate passed while the other failed on identical code. A package that",
+    "genuinely needs ambient types declares them in its own tsconfig."
+  ],
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "types": [],
+
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "moduleDetection": "force",
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useUnknownInCatchVariables": true,
+
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  }
+}

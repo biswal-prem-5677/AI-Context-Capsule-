@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": [
+    "Gate 2 of 2: test files and repository tooling, which legitimately run under Node.",
+    "",
+    "This program declares `types: [\"node\"]` because vitest pulls the Node ambient",
+    "declarations in regardless; naming it here makes the dependency intentional instead",
+    "of incidental. Source files are included so tests can import them, which does mean",
+    "Node globals are visible to source *in this program* — gate 1 is the config that",
+    "enforces the platform-neutral boundary, and it runs first.",
+    "",
+    "Both gates run in sequence under `pnpm typecheck`."
+  ],
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "types": ["node"]
+  },
+  "include": ["packages/*/src/**/*.ts", "apps/*/src/**/*.ts", "e2e/**/*.ts", "vitest.config.ts"]
+}

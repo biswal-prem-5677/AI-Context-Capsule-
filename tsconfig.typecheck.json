@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": [
+    "Gate 1 of 2: shipped source only, in a deliberately Node-free program.",
+    "",
+    "Test files and vitest.config.ts are excluded here even though they must also",
+    "typecheck — gate 2 (tsconfig.typecheck.tests.json) covers those. The reason is that",
+    "importing `vitest` transitively loads vite's and @types/node's ambient declarations",
+    "into whichever program contains it, which hands `process`, `Buffer`, and the rest of",
+    "the Node global surface to every other file in that same program, including packages",
+    "that Document 14 §2 requires to stay platform-neutral. `types: []` does not prevent",
+    "this, because those declarations arrive through a module import rather than through",
+    "automatic @types inclusion.",
+    "",
+    "Keeping shipped source in its own program is what makes the boundary enforceable: a",
+    "`process.env` reference inside capsule-schema fails here.",
+    "",
+    "Deliberately has no `paths` mapping: cross-package imports must resolve through real",
+    "pnpm workspace links, so a package that forgets to declare a dependency fails here",
+    "rather than at runtime."
+  ],
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false
+  },
+  "include": ["packages/*/src/**/*.ts", "apps/*/src/**/*.ts"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+}
