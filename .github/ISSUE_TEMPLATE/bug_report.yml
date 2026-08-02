@@ -1,0 +1,83 @@
+name: Bug report
+description: Something in the extension, capsule handling, or tooling behaves incorrectly.
+labels: ['type:bug', 'needs-triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not paste real conversation content.** Context Capsule handles private AI
+        conversations, and issue trackers are public and permanent. Reproduce with
+        synthetic text and describe the shape of the real content instead.
+
+        For a suspected vulnerability, follow the
+        [security policy](https://github.com/biswal-prem-5677/AI-Context-Capsule-/blob/main/.github/SECURITY.md)
+        instead of opening an issue.
+
+  - type: checkboxes
+    id: content-safety
+    attributes:
+      label: Content safety
+      options:
+        - label: This report contains no real conversation text, credentials, or personal data
+          required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: The incorrect behaviour, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps using synthetic content, starting from a known state.
+      placeholder: |
+        1. Open a new chat with three synthetic turns
+        2. ...
+        3. Expected: ... Actual: ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Capsule format or validation
+        - Local library, editor, or storage
+        - Import or export
+        - Provider capture or insertion
+        - Repository tooling or CI
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: provider
+    attributes:
+      label: Provider and page
+      description: ChatGPT, Claude, or Gemini, plus what kind of page. Leave blank if not provider-related.
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Chrome version, extension version, operating system. For tooling bugs, Node and pnpm versions.
+      placeholder: |
+        Chrome: 141.0.0.0
+        Extension: 0.0.0
+        OS: Windows 11
+    validations:
+      required: true
+
+  - type: textarea
+    id: data-impact
+    attributes:
+      label: Did anything get lost or sent
+      description: >-
+        Did a capsule fail to save, did a draft get overwritten, or was a message sent
+        automatically? These are release-blocking and should be stated plainly.

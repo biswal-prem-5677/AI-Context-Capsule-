@@ -1,0 +1,79 @@
+name: Adapter regression
+description: A supported provider's capture or insertion stopped working, likely after a site change.
+labels: ['type:bug', 'area:adapter', 'needs-triage', 'p1']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Provider DOM changes are the project's top known risk (Document 22). This template
+        collects what an adapter fix needs.
+
+        **Use synthetic conversation content only.** Do not paste real chats or account data.
+
+  - type: checkboxes
+    id: content-safety
+    attributes:
+      label: Content safety
+      options:
+        - label: This report contains no real conversation text, credentials, or personal data
+          required: true
+
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider
+      options:
+        - ChatGPT
+        - Claude
+        - Gemini
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operation
+    attributes:
+      label: Which operation broke
+      options:
+        - Capture — no turns detected
+        - Capture — wrong or partial turns detected
+        - Insertion — composer not found
+        - Insertion — text inserted incorrectly
+        - Insertion — existing draft was overwritten
+        - Message was sent automatically
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed
+    attributes:
+      label: What the adapter did
+      description: Expected versus actual behaviour, including any error surfaced in the UI.
+    validations:
+      required: true
+
+  - type: textarea
+    id: fallback
+    attributes:
+      label: Did the fallback path work
+      description: >-
+        Were Copy, Export, or manual capsule creation still available and usable? A broken
+        adapter with a working fallback is a different severity from a dead end.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and timing
+      description: Chrome version, extension version, OS, and roughly when it started failing.
+    validations:
+      required: true
+
+  - type: textarea
+    id: markup
+    attributes:
+      label: Sanitised markup
+      description: >-
+        Optional but valuable — the relevant DOM structure with all conversation text
+        replaced by placeholders. This is what a new fixture is built from.
+      render: html

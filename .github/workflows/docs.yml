@@ -1,0 +1,39 @@
+# Context Capsule documentation gate (Document 15 §5).
+#
+# The numbered documents are decision records that link to each other constantly, so a
+# broken cross-reference is a real defect. `check-doc-links.mjs` is offline by design and
+# needs no dependency install, so this job stays fast and cannot fail for someone else's
+# outage.
+
+name: docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  links:
+    name: Link and cross-reference check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check document links
+        run: node scripts/check-doc-links.mjs

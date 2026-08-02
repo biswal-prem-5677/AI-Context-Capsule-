@@ -1,0 +1,77 @@
+# Context Capsule security gate (Document 15 §5, Document 11).
+#
+# Scope note: this covers dependency advisories, lockfile integrity, and committed
+# secret-bearing files. Manifest permission diffing arrives with the extension in
+# Milestone 2, and GitHub-native secret scanning and push protection are repository
+# settings the owner enables — neither is silently faked here.
+
+name: security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly, so a newly published advisory surfaces without waiting for a commit.
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+
+jobs:
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit dependencies
+        run: pnpm audit --audit-level high
+
+  secrets:
+    name: Committed secret check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # A coarse but reliable backstop for the one mistake .gitignore is meant to
+      # prevent: an environment or key file reaching the repository. Only `.env.example`
+      # is allowed to be tracked.
+      - name: Check for tracked secret-bearing files
+        run: |
+          matches="$(git ls-files \
+            | grep -Ei '(^|/)\.env(\..*)?$|\.(pem|crx|p12|pfx|key)$' \
+            | grep -v '\.env\.example$' || true)"
+
+          if [ -n "$matches" ]; then
+            echo "::error::Secret-bearing files are tracked in git:"
+            echo "$matches"
+            exit 1
+          fi
+
+          echo "No secret-bearing file patterns are tracked."

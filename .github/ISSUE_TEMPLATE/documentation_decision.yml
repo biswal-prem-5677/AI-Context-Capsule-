@@ -1,0 +1,62 @@
+name: Documentation decision
+description: Record a decision, correction, or conflict in the numbered documents.
+labels: ['type:docs', 'area:docs', 'needs-triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The numbered documents are decision records, not descriptions. Use this when a
+        document is wrong, two documents disagree, or a decision needs to be made and
+        written down. The conflict rule lives in
+        [Document 00](https://github.com/biswal-prem-5677/AI-Context-Capsule-/blob/main/docs/00_documentation_architecture.md).
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - Two documents conflict
+        - A document is factually wrong or out of date
+        - A decision is missing and needs an owner
+        - A document claims something that has no evidence
+    validations:
+      required: true
+
+  - type: input
+    id: documents
+    attributes:
+      label: Documents involved
+      placeholder: 'docs/10_capsule_specification.md §4, docs/08_database_design.md §2'
+    validations:
+      required: true
+
+  - type: textarea
+    id: discrepancy
+    attributes:
+      label: What the documents say
+      description: Quote the conflicting or incorrect statements with their headings.
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: What this blocks
+      description: The implementation, review, or release step that cannot proceed until this is settled.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed resolution
+      description: Which document should win, what the corrected text should say, and who owns the decision.
+
+  - type: checkboxes
+    id: followthrough
+    attributes:
+      label: Resolution requires
+      options:
+        - label: Updating the owning numbered document
+        - label: Recording the resolution in CONTEXT.md
+        - label: A new ADR because the decision is cross-cutting

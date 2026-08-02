@@ -1,0 +1,54 @@
+name: Release task
+description: Track a step required for a release candidate or milestone completion.
+labels: ['type:chore', 'needs-triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A release is complete when
+        [Document 19](https://github.com/biswal-prem-5677/AI-Context-Capsule-/blob/main/docs/19_release_checklist.md)
+        evidence exists — not when the build goes green. Use one issue per verifiable step.
+
+  - type: input
+    id: version
+    attributes:
+      label: Target version or milestone
+      placeholder: 'v0.1.0 core transfer beta, or M0 Foundation'
+    validations:
+      required: true
+
+  - type: textarea
+    id: task
+    attributes:
+      label: What must be done
+      description: One concrete step, scoped so that it is either done or not done.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence required to close this
+      description: >-
+        The specific command output, CI run, manual check, or screenshot that proves it.
+        "Looks fine" does not close a release task.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: blocking
+    attributes:
+      label: Is this release-blocking
+      options:
+        - 'Yes — the release cannot ship without it'
+        - 'No — it can follow the release'
+    validations:
+      required: true
+
+  - type: textarea
+    id: owner
+    attributes:
+      label: Owner and dependencies
+      description: >-
+        Who can actually do this, and what it waits on. Several release steps need the
+        repository, business, or security owner rather than an engineer.

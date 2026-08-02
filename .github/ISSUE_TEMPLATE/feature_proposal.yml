@@ -1,0 +1,74 @@
+name: Feature proposal
+description: Propose a capability or change in behaviour.
+labels: ['type:feature', 'needs-triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Context Capsule has a deliberately narrow V1: move a reviewed context capsule
+        between ChatGPT, Claude, and Gemini, locally. Proposals outside that boundary are
+        welcome, but they are roadmap decisions rather than implementation tickets — see
+        [Document 02](https://github.com/biswal-prem-5677/AI-Context-Capsule-/blob/main/docs/02_product_requirements_document.md)
+        and [Document 21](https://github.com/biswal-prem-5677/AI-Context-Capsule-/blob/main/docs/21_future_roadmap.md).
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: The user problem, not the solution. Who hits it, when, and what it costs them today.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What the user would be able to do that they cannot do now.
+    validations:
+      required: true
+
+  - type: textarea
+    id: value
+    attributes:
+      label: Value and evidence
+      description: Why this is worth its complexity. Real usage, support reports, or a concrete scenario beats speculation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: non-goals
+    attributes:
+      label: Non-goals
+      description: What this explicitly does not include. This is what keeps the proposal implementable.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: slice
+    attributes:
+      label: Which release slice does this belong to
+      description: 1A is the release-blocking local core. 1B and 1C are separately gated and cannot block 1A.
+      options:
+        - 1A — local core transfer
+        - 1B — optional sync dashboard
+        - 1C — optional smart drafting
+        - Beyond V1
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy and permission impact
+      description: >-
+        Would this need a new browser permission, host access, account, network call, or
+        any data leaving the user's machine? Say so plainly — it determines the review path.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Including doing nothing, or solving it in documentation instead of code.
