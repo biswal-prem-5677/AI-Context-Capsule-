@@ -11,7 +11,7 @@ Everything here needs **you**, not an engineer or an AI agent. Each item is some
 
 ## A. Blocking right now
 
-These stop Milestone 0 from closing and Milestone 1 from starting.
+These stop Milestone 0 from closing. Since the 1A scope was approved on 2026-08-03, **A1 is the only one still blocking Milestone 1 from starting** — it is a two-minute check in your browser.
 
 ### A1. Confirm the first CI runs are green
 
@@ -19,7 +19,7 @@ These stop Milestone 0 from closing and Milestone 1 from starting.
 - **Why you:** I have no `gh` CLI and the API returns 404 from here, so I cannot see the result.
 - **Already de-risked:** every command these workflows run passes locally, and the failures that only appear on a Linux runner were reproduced and ruled out — path-case mismatches in document links, CRLF in the index, lockfile drift under `--frozen-lockfile`, a high-severity advisory, and the committed-secret pipeline. See "CI pre-flight" in [`CONTEXT.md`](CONTEXT.md). What remains genuinely unknowable from here is GitHub's side: whether Actions is enabled at all, and how the runner handles Corepack, caching, and registry access.
 - **If red:** paste the failing step's log and I will fix it.
-- **Blocks:** M0 acceptance criterion "CI green". Until this passes, M0 is not closed.
+- **Blocks:** M0 acceptance criterion "CI green", and now the start of Milestone 1. Until this passes, M0 is not closed.
 
 ### A2. Enable branch protection on `main`
 
@@ -61,13 +61,6 @@ These stop Milestone 0 from closing and Milestone 1 from starting.
 
 - [ ] Foundation, Local Capsule Engine, ChatGPT Transfer, Cross-Provider Transfer, Sync Dashboard Beta, Smart Draft Beta, Release Readiness.
 - **Why it matters:** [Document 15 §4](docs/15_github_workflow.md) tracks acceptance evidence per milestone.
-
-### A8. Approve the 1A scope and the 1B/1C gates
-
-- [ ] Confirm: 1A is Chrome MV3, ChatGPT/Claude/Gemini web, local capture/review/library/import/export/insert.
-- [ ] Confirm: 1B sync and 1C smart drafting stay closed until explicitly opened.
-- **Why you:** product-owner authority. Listed in `CONTEXT.md` as blocking implementation start.
-- **Blocks:** Milestone 1. I should not build the local capsule engine against an unapproved scope.
 
 ### A9. Run `corepack enable` in an elevated shell *(local machine only)*
 
@@ -175,4 +168,9 @@ Nothing here is needed for the 1A beta. Do not let these delay it.
 
 Move items here with a date when they are done, rather than deleting them — a resolved blocker is useful history.
 
-*(none yet)*
+### A8. Approve the 1A scope and the 1B/1C gates — resolved 2026-08-03
+
+- [x] 1A is Chrome MV3; ChatGPT, Claude, and Gemini web; local capture, review, library, import, export, and insert.
+- [x] 1B sync and 1C smart drafting stay closed until the owner explicitly opens them.
+- **Approved as documented**, with no changes requested. Recorded under "Confirmed by the product owner" in [`CONTEXT.md`](CONTEXT.md).
+- **Effect:** Milestone 1 is no longer blocked on scope. Changing this scope now needs a new written owner decision, not an engineering judgement.

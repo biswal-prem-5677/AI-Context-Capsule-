@@ -3,8 +3,8 @@
 ## Current sprint
 
 **Sprint:** Milestone 0 — Verified foundation. Engineering deliverables complete; one owner-dependent item remains.  
-**Phase:** Workspace, quality gates, the capsule v1 schema package, CI workflows, and contribution templates exist and are verified locally. Branch protection requires the repository owner, so M0 is not formally closed.  
-**Current priority:** Confirm the first CI run is green on GitHub and have the repository owner apply branch protection and labels, then begin Milestone 1.
+**Phase:** Workspace, quality gates, the capsule v1 schema package, CI workflows, and contribution templates exist and are verified locally. The 1A scope was approved on 2026-08-03. Branch protection requires the repository owner, so M0 is not formally closed.  
+**Current priority:** Confirm the first CI run is green on GitHub — the last gate before Milestone 1 — and have the repository owner apply branch protection and labels.
 
 ## Milestone 0 status
 
@@ -59,14 +59,25 @@ The local gates run on Windows; CI runs on `ubuntu-latest`. Some failures can on
 - Root `OWNER_ACTIONS.md`: single tracked queue of owner-dependent tasks, replacing blockers previously scattered across this file and the numbered documents.
 - Existing unnumbered files in `docs/` remain early baseline references and are superseded by numbered documents where stated.
 
-## Approved working assumptions — pending owner confirmation
+## Confirmed by the product owner
+
+**2026-08-03 — 1A scope and the 1B/1C gates (resolves OWNER_ACTIONS A8):**
+
+- Required release slice: 1A Core Transfer MVP — Chrome MV3 extension; ChatGPT, Claude, Gemini web; local capture/review/library/import/export/insert.
+- 1B sync dashboard and 1C AI-assisted drafting stay **closed** until the owner explicitly opens them. They may not delay a local-first public beta, and may not be started as "groundwork" inside 1A.
+
+This is the approved scope Milestone 1 builds against. Changing it requires a new written owner decision, not an engineering judgement.
+
+## Working assumptions — still pending owner confirmation
+
+These were not part of the 2026-08-03 approval and remain assumptions:
 
 - Product name: Context Capsule.
-- Required release slice: 1A Core Transfer MVP — Chrome MV3 extension; ChatGPT, Claude, Gemini web; local capture/review/library/import/export/insert.
-- 1B sync dashboard and 1C AI-assisted drafting are separately gated and cannot delay a local-first public beta.
 - Core data is a user-editable, versioned JSON/Markdown capsule; it is not a complete transcript or guaranteed conversation continuation.
 - Extension never sends a chat message automatically and preserves an existing target draft.
 - Raw excerpts do not sync by default; optional data egress requires just-in-time consent.
+
+The last two are trust guarantees already binding under `CLAUDE.md` §3 and the Do not change list; owner confirmation would make them explicit rather than newly true.
 
 ## Open decisions and blockers
 
@@ -74,20 +85,21 @@ The owner-facing view of this table, plus every repository setting, account, pay
 
 | Decision | Owner | Blocks |
 | --- | --- | --- |
-| Approve/refine the 1A scope and 1B/1C gates | Product owner | Implementation start |
 | Smart-draft provider, economics, retention, and consent copy — or defer 1C | Product/legal owner | 1C only |
 | Whether 1B sync ships in first public beta | Product owner | 1B planning/release |
 | Legal entity, privacy policy, support contact, security contact address, Chrome Web Store account | Business owner | Public release |
 | Repository license — currently `UNLICENSED`/all rights reserved, stated as such in README | Business owner | Any external contribution or reuse |
 | Supabase/Vercel account ownership, regions, backup policy, OAuth details | Technical owner | 1B deployment |
 
+Resolved: 1A scope and the 1B/1C gates were approved on 2026-08-03 — see Confirmed by the product owner above.
+
 ## Next tasks — strict order
 
-1. Confirm the first `quality`, `docs`, and `security` workflow runs are green on GitHub; fix anything the runner surfaces that local gates could not.
+1. Confirm the first `quality`, `docs`, and `security` workflow runs are green on GitHub; fix anything the runner surfaces that local gates could not. **This is now the only remaining gate on starting Milestone 1.**
 2. Configure branch protection, required checks, issue labels, and project tracking per Document 15 — needs the repository owner. Until branch protection exists, bootstrap direct pushes to `main` remain permitted by Document 15 §7.
-3. Review Documents 01–05 and confirm product scope/positioning decisions.
+3. Review Documents 01–05 and confirm the remaining positioning decisions. The 1A **scope** is settled (2026-08-03); what is left here is vision, market positioning, UX, and design-system review, which do not block M1 implementation.
 4. Review Documents 06–12 with engineering/security owner; log any accepted changes in this file and the relevant numbered document.
-5. Begin Milestone 1 (Local Capsule Engine) only after M0 is complete and CI is green.
+5. Begin Milestone 1 (Local Capsule Engine) once CI is confirmed green. Scope approval no longer blocks it.
 6. Do not build dashboard sync or smart drafting before 1A evidence and their explicit gates.
 
 ## Current priorities

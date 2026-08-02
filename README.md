@@ -22,6 +22,8 @@ The V1 promise is deliberately narrow: **generate a reviewed context capsule, th
 
 ## V1 boundaries
 
+These boundaries were approved by the product owner on 2026-08-03 and are no longer a working assumption. Changing them requires a new written decision.
+
 Included in the release-blocking core: Chrome, ChatGPT, Claude, Gemini, local capsule create/import/export/library, and reviewed composer insertion. Signed-in cloud sync/dashboard and AI drafting are separately gated optional beta capabilities.
 
 Explicitly excluded: payments, teams, integrations, semantic search, model routing, mobile, Firefox/Edge packaging, and automatic cross-provider conversation continuation.
