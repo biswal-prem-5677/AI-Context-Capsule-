@@ -4,7 +4,7 @@ Everything here needs **you**, not an engineer or an AI agent. Each item is some
 
 **How to use this file:** work top-down — Section A blocks current progress. Tick a box, and tell me which item you completed; I will verify what is verifiable, update `CONTEXT.md`, and remove the blocker. If an item turns out to be wrong or unnecessary, say so and I will delete it rather than leave it rotting here.
 
-**Last reviewed:** 2026-08-02  
+**Last reviewed:** 2026-08-03  
 **Sources:** `CONTEXT.md` open decisions, [Document 15](docs/15_github_workflow.md), [Document 19](docs/19_release_checklist.md), [Document 20](docs/20_mvp_roadmap.md).
 
 ---
@@ -15,8 +15,9 @@ These stop Milestone 0 from closing and Milestone 1 from starting.
 
 ### A1. Confirm the first CI runs are green
 
-- [ ] Open the **Actions** tab and check the `quality`, `docs`, and `security` workflows on commit `4c0d259`.
+- [ ] Open the **Actions** tab and check the `quality`, `docs`, and `security` workflows on the latest commit on `main`.
 - **Why you:** I have no `gh` CLI and the API returns 404 from here, so I cannot see the result.
+- **Already de-risked:** every command these workflows run passes locally, and the failures that only appear on a Linux runner were reproduced and ruled out — path-case mismatches in document links, CRLF in the index, lockfile drift under `--frozen-lockfile`, a high-severity advisory, and the committed-secret pipeline. See "CI pre-flight" in [`CONTEXT.md`](CONTEXT.md). What remains genuinely unknowable from here is GitHub's side: whether Actions is enabled at all, and how the runner handles Corepack, caching, and registry access.
 - **If red:** paste the failing step's log and I will fix it.
 - **Blocks:** M0 acceptance criterion "CI green". Until this passes, M0 is not closed.
 

@@ -34,6 +34,22 @@ Document 15 §5 lists six workflows. Three are implemented now; the rest are def
 
 `security.yml` currently covers dependency advisories and a committed-secret file check. Manifest permission diffing arrives with the extension in M2. GitHub-native secret scanning and push protection are repository settings the owner enables; they are not simulated in CI.
 
+### CI pre-flight — cross-platform checks (2026-08-03)
+
+The local gates run on Windows; CI runs on `ubuntu-latest`. Some failures can only appear on the runner, so each was reproduced locally against the same inputs the workflow uses rather than left for the owner to discover in a red first run:
+
+| Risk | Why local gates cannot catch it | Check performed | Result |
+| --- | --- | --- | --- |
+| Path case mismatch in a document link | Windows resolves paths case-insensitively; Linux does not, so `docs/00_Documentation_architecture.md` passes here and fails there | Every relative Markdown link target compared against `git ls-files` with exact case | Pass — 252 link instances, 0 mismatches |
+| CRLF committed into the index | `core.autocrlf=true` here, and `prettier --check` defaults to `endOfLine: lf` on the runner | Scanned every blob in `HEAD` for `\r` | Pass — 0 files; `.gitattributes` `* text=auto eol=lf` is holding |
+| Lockfile drift failing `--frozen-lockfile` | A local install succeeds by updating the lockfile; CI forbids that | `pnpm install --frozen-lockfile --dry-run` | Pass — lockfile up to date, a real install would make no changes |
+| A high-severity advisory failing `security.yml` | Depends on the live advisory database, not on repository content | `pnpm audit --audit-level high` | Pass — no known vulnerabilities |
+| The committed-secret job's shell pipeline | Only `.env.example` may be tracked; a wrong regex silently passes or wrongly fails | Ran the workflow's exact pipeline locally | Pass — only `.env.example` tracked |
+
+`.nvmrc` is `22.18.0` and `packageManager` is `pnpm@11.18.0`, so `actions/setup-node` and Corepack resolve the versions used locally.
+
+**Still unverifiable from here, and the reason A1 remains open:** that workflows are enabled on the repository at all, that `corepack enable` and `actions/cache` behave on the runner, that `pnpm store path --silent` yields a usable cache path, and that the runner has registry access. Those are properties of GitHub, not of this tree. The first run remains the actual test.
+
 ## Completed documentation
 
 - Documents 00–15: architecture of the documentation, product/design, system/extension/data/API/capsule/security/testing, deployment, structure, and GitHub workflow.
@@ -115,7 +131,7 @@ The owner-facing view of this table, plus every repository setting, account, pay
 
 None open. The only code is `capsule-schema` plus repository tooling in `scripts/`; there is no extension, adapter, UI, or deployment yet. Do not interpret green gates as production readiness.
 
-The three CI workflows have passed no run on GitHub at the time of writing — they are verified only insofar as their YAML parses and each command they invoke passes locally. Treat the first run as the actual test of them.
+The three CI workflows have passed no run on GitHub at the time of writing. Every command they invoke, plus the cross-platform failure modes listed under CI pre-flight above, passes locally against the same inputs — but a local pass is not a CI pass, and the first run is still the actual test.
 
 Fixed during M0 (2026-08-02): `pnpm build` and `pnpm lint` failed on unresolved `TextEncoder`/`URL` in `capsule-schema`, while `pnpm typecheck` passed on the same code — the root typecheck config saw `node_modules/@types` and the per-package build config did not. Resolved by AD-07 and AD-08. Guarded by a negative check: adding `process.env`/`Buffer` to `capsule-schema` now fails both `pnpm typecheck` and `pnpm lint`.
 
