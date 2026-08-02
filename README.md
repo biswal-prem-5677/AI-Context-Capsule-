@@ -18,6 +18,8 @@ The V1 promise is deliberately narrow: **generate a reviewed context capsule, th
 
 [`CONTEXT.md`](CONTEXT.md) is the authoritative current state, including open blockers and verified command results. Nothing here is claimed to work without evidence recorded there.
 
+[`OWNER_ACTIONS.md`](OWNER_ACTIONS.md) lists what currently needs a human with account access, spending authority, or a real browser — including the repository settings that Milestone 0 cannot close without.
+
 ## V1 boundaries
 
 Included in the release-blocking core: Chrome, ChatGPT, Claude, Gemini, local capsule create/import/export/library, and reviewed composer insertion. Signed-in cloud sync/dashboard and AI drafting are separately gated optional beta capabilities.
@@ -79,14 +81,16 @@ context-capsule/
 ├─ scripts/               # repository tooling
 ├─ .github/               # CI workflows, issue and pull request templates
 ├─ CONTEXT.md             # Document 16 — current state, decisions, verified commands
-└─ CLAUDE.md              # Document 17 — AI engineering operating contract
+├─ CLAUDE.md              # Document 17 — AI engineering operating contract
+├─ EXECUTION_RULES.md     # how work is executed against that contract
+└─ OWNER_ACTIONS.md       # tasks that need the owner, not an engineer
 ```
 
 `capsule-schema` is deliberately platform-neutral: no React, Chrome APIs, Supabase, DOM, or Node built-ins, enforced by both the typecheck configuration and lint rules so the extension, dashboard, and any future server function can import it unchanged.
 
 ## Contributing
 
-Read [Document 15 — GitHub workflow](docs/15_github_workflow.md) first. In short: trunk-based development on a protected `main`, short-lived branches, Conventional Commits, and a pull request that carries its verification evidence rather than asserting it.
+Read [`EXECUTION_RULES.md`](EXECUTION_RULES.md) first — it is the ordered procedure for making a change here: session startup, the scope stop conditions, the verification commands, and the rule that documentation and GitHub are updated with every change. [Document 15 — GitHub workflow](docs/15_github_workflow.md) is the underlying governance: trunk-based development on a protected `main`, short-lived branches, Conventional Commits, and a pull request that carries its verification evidence rather than asserting it.
 
 Every change runs `pnpm verify` before review. Issue templates cover bug reports, feature proposals, adapter regressions, documentation decisions, and release tasks.
 

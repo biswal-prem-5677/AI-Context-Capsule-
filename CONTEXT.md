@@ -39,6 +39,8 @@ Document 15 §5 lists six workflows. Three are implemented now; the rest are def
 - Documents 00–15: architecture of the documentation, product/design, system/extension/data/API/capsule/security/testing, deployment, structure, and GitHub workflow.
 - Documents 18–25: installation, release, MVP/future roadmaps, risks, limitations, launch strategy, and success metrics.
 - Root `CLAUDE.md`: durable AI-agent operating contract.
+- Root `EXECUTION_RULES.md`: ordered execution procedure derived from `CLAUDE.md` — startup sequence, scope stop conditions, verification commands, documentation and push rules. Holds no independent authority; registered in [Document 00](docs/00_documentation_architecture.md).
+- Root `OWNER_ACTIONS.md`: single tracked queue of owner-dependent tasks, replacing blockers previously scattered across this file and the numbered documents.
 - Existing unnumbered files in `docs/` remain early baseline references and are superseded by numbered documents where stated.
 
 ## Approved working assumptions — pending owner confirmation
@@ -51,6 +53,8 @@ Document 15 §5 lists six workflows. Three are implemented now; the rest are def
 - Raw excerpts do not sync by default; optional data egress requires just-in-time consent.
 
 ## Open decisions and blockers
+
+The owner-facing view of this table, plus every repository setting, account, payment, and live-testing task that needs a human, is tracked in [`OWNER_ACTIONS.md`](OWNER_ACTIONS.md). Keep the two in step: an item resolved there is resolved here.
 
 | Decision | Owner | Blocks |
 | --- | --- | --- |
@@ -139,7 +143,7 @@ Verified on Node 22.18.0 / pnpm 11.18.0 (Windows 11), 2026-08-02. Each gate was 
 | `pnpm typecheck` | Pass — both type programs (see AD-07) |
 | `pnpm test` | Pass — 5 files, 182 tests |
 | `pnpm build` | Pass — `tsc -b` emits `packages/capsule-schema/dist` |
-| `pnpm check:docs` | Pass — 33 Markdown files scanned, 31 relative link targets resolved |
+| `pnpm check:docs` | Pass — 35 Markdown files scanned, 33 relative link targets resolved |
 | `pnpm verify` | The six above, sequenced. Not run as a single chained command on this machine (see environment note); every constituent gate passed individually |
 
 Not yet available; these exit non-zero on purpose with the owning milestone (`scripts/not-implemented.mjs`): `dev:extension` (M2), `test:e2e` (M2), `package:extension` (M4), `dev:dashboard` (M5).
@@ -154,7 +158,8 @@ Branch protection is not configured yet, so Document 15 §7 bootstrap direct pus
 
 ## Developer notes
 
-- Start every session by reading this file, `CLAUDE.md`, and the relevant numbered documents.
+- Start every session by reading this file, `CLAUDE.md`, [`EXECUTION_RULES.md`](EXECUTION_RULES.md), and the relevant numbered documents. `EXECUTION_RULES.md` is the ordered procedure; `CLAUDE.md` remains the authority.
+- Standing product-owner instruction (2026-08-02): every change, modification, improvement, or creation updates the affected documents, `CONTEXT.md`, and `README.md`, and is pushed to GitHub in the same pass. Do not batch documentation for later.
 - Update this file at the end of every meaningful implementation, decision, incident, or release change.
 - Mark an item completed only with linked test/build/manual evidence; never replace current facts with aspirational status.
 - Keep this concise; detailed rationale belongs in numbered documents/issues/ADRs.

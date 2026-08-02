@@ -22,6 +22,18 @@ The following baseline materials already exist and remain useful inputs until th
 
 Keeping `CONTEXT.md` and `CLAUDE.md` at the repository root is an intentional structural improvement over placing copies under `docs/`: common AI/dev tools discover those names there. Documents 16 and 17 refer to the root files, avoiding two competing sources of truth.
 
+### Unnumbered root operating files
+
+Two further root files are operational rather than decision records. They are deliberately **not** numbered, because they hold no decision authority: everything in them is derived from a numbered document or from `CONTEXT.md`, and they are the defect if they ever disagree.
+
+| File | Role | Derived from | May not contain |
+| --- | --- | --- | --- |
+| `AGENTS.md` | Conventional-path pointer for AI coding tools | 16, 17 | Any instruction not already binding elsewhere |
+| `EXECUTION_RULES.md` | Ordered procedure for executing work: startup sequence, stop conditions, verification commands, documentation and push rules | 17 primarily; 10–12, 14, 15, 20 | New scope, new authority, or a rule that contradicts Document 17 |
+| `OWNER_ACTIONS.md` | Single tracked list of tasks that require the product, business, technical, or repository owner | `CONTEXT.md` open decisions; 15, 19, 20 | Engineering work, or a decision presented as already made |
+
+`OWNER_ACTIONS.md` exists because owner-dependent blockers were previously scattered across the `CONTEXT.md` open-decisions table, the milestone status table, and individual documents, which made it impossible for the owner to see their own queue in one place.
+
 ## Design rules for every document
 
 Every numbered document must contain, where relevant: purpose, scope, assumptions, diagrams, workflows, edge cases, risks, alternatives, implementation notes, acceptance criteria, and references. A section may state “not applicable” only with a reason.
@@ -140,7 +152,7 @@ Alternative: combine documents into a single large blueprint. Rejected because r
 - Every required document has one canonical location and a non-overlapping owner/purpose.
 - Dependencies create no circular prerequisite before the Phase 1 gate.
 - Cross-reference and conflict-resolution rules are clear enough for a senior team to use.
-- Root `CONTEXT.md` and `CLAUDE.md` remain the only live sources for project memory and AI-agent instructions.
+- Root `CONTEXT.md` and `CLAUDE.md` remain the only live sources for project memory and AI-agent decision authority. The unnumbered operating files (`AGENTS.md`, `EXECUTION_RULES.md`, `OWNER_ACTIONS.md`) are procedural or tracking surfaces derived from them and hold no independent authority.
 - All 25 numbered documents are present as drafts, with Documents 16 and 17 intentionally represented by root `CONTEXT.md` and `CLAUDE.md`.
 - Implementation remains blocked until the Phase 1 gate has product-owner approval and open decisions are resolved.
 
