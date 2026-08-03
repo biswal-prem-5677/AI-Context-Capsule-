@@ -13,7 +13,7 @@
 | Deliverable | State |
 | --- | --- |
 | Markdown codec in `capsule-schema` (Document 10 §6, both directions) | Done — 24 unit tests; round trip, escaping, alias headings, unknown sections, oversized input |
-| `capsule-core` package: repository contract, in-memory reference repository, library search/sort, lifecycle policy, prompt composer | Done — 47 unit tests; boundary rules verified to fire on a DOM or `indexedDB` reference |
+| `capsule-core` package: repository contract, in-memory reference repository, library search/sort, lifecycle policy, prompt composer | Done — 53 unit tests; boundary rules verified to fire on a DOM or `indexedDB` reference. Repository behaviour lives in a shared, framework-free contract suite (`src/repository-contract.ts`) that every implementation runs |
 | IndexedDB repository in `apps/extension/src/storage` (Document 07 §6, Document 08 §3) | Not started |
 | Third typecheck program for the extension app | Not started — will be recorded as AD-13 |
 
@@ -186,7 +186,7 @@ Verified on Node 22.18.0 / pnpm 11.18.0 (Windows 11), 2026-08-03. Each gate was 
 | `pnpm format:check` | Pass — all files match Prettier style, including `.github/**` YAML |
 | `pnpm lint` | Pass — 0 problems |
 | `pnpm typecheck` | Pass — both type programs (see AD-07) |
-| `pnpm test` | Pass — 10 files, 253 tests |
+| `pnpm test` | Pass — 10 files, 259 tests |
 | `pnpm build` | Pass — `tsc -b` emits `packages/capsule-schema/dist` and `packages/capsule-core/dist` |
 | `pnpm check:docs` | Pass — 35 Markdown files scanned, 33 relative link targets resolved |
 | `pnpm verify` | The six above, sequenced — note `build` now runs before `typecheck` (AD-12). Not run as a single chained command on this machine (see environment note); every constituent gate passed individually |

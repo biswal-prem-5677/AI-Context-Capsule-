@@ -2,8 +2,8 @@
  * In-memory reference implementation of {@link CapsuleRepository}.
  *
  * Two jobs. It makes core and UI tests deterministic without a browser, and it is the
- * executable definition of what the IndexedDB implementation has to do — the same test
- * suite runs against both, so "the real one behaves differently" becomes a failing test
+ * reference against which the real store is measured — both run the shared cases in
+ * `repository-contract.ts`, so "the real one behaves differently" becomes a failing test
  * rather than a surprise in a user's browser.
  *
  * It is not durable and is never a user data store: Document 07 §6 requires user data to

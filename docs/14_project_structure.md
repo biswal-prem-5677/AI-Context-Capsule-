@@ -69,7 +69,7 @@ context-capsule/
 
 No app may redefine the canonical capsule type. No component may use a provider selector outside its adapter module. No remote API response enters state without schema validation.
 
-**Where storage lives.** `capsule-core` owns the `CapsuleRepository` *contract* — the interface, the typed error codes, and an in-memory reference implementation for tests. The IndexedDB implementation is not a package: [Document 07 §6](07_browser_extension_architecture.md) puts it in the extension application layer (`apps/extension/src/storage/`). Keeping the contract in core and the implementation in the app is what lets library, lifecycle, and prompt logic be tested without a browser, and keeps `indexedDB` out of the shared layer — enforced by lint, not by review.
+**Where storage lives.** `capsule-core` owns the `CapsuleRepository` *contract* — the interface, the typed error codes, an in-memory reference implementation for tests, and the shared behavioural test suite (`src/repository-contract.ts`, published on the `./repository-contract` subpath) that every implementation must pass. The IndexedDB implementation is not a package: [Document 07 §6](07_browser_extension_architecture.md) puts it in the extension application layer (`apps/extension/src/storage/`). Keeping the contract in core and the implementation in the app is what lets library, lifecycle, and prompt logic be tested without a browser, and keeps `indexedDB` out of the shared layer — enforced by lint, not by review.
 
 ## 3. Naming and coding conventions
 

@@ -11,8 +11,13 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./repository-contract": {
+      "types": "./dist/repository-contract.d.ts",
+      "default": "./dist/repository-contract.js"
     }
   },
+  "//exports": "`./repository-contract` is a separate entry point on purpose: it is test-support code that every CapsuleRepository implementation runs, so it must be importable from the extension app, but it must not be reachable from the package's main entry and end up in a shipped bundle.",
   "files": [
     "dist"
   ],

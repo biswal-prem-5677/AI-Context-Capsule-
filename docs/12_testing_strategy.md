@@ -27,6 +27,8 @@ Testing follows a risk-based pyramid: fast deterministic schema/core tests at th
 | Manual live smoke | Current provider UIs and Chrome installation | Each source/target matrix, permissions, visual placement, no auto-send, adapter graceful failure. |
 | Non-functional | Performance/accessibility/security/resilience | 200-turn capture, 500-capsule search, keyboard/screen-reader checks, XSS corpus, service-worker restart. |
 
+Storage is specified once rather than tested twice. `packages/capsule-core/src/repository-contract.ts` holds the behaviour every `CapsuleRepository` must exhibit — revisions, tombstones, the undo window, and exact capsule round trip — and both the in-memory reference implementation and the extension's IndexedDB repository run that same list. Failure paths only one implementation can reach (simulated quota exhaustion, a corrupt stored record, a database that will not open) stay in the owning implementation's own test file, so the shared list keeps holding for any future store.
+
 ## 3. Traceability to product requirements
 
 | PRD area | Minimum evidence |
