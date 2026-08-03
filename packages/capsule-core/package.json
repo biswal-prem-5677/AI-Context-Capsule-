@@ -1,0 +1,25 @@
+{
+  "name": "@context-capsule/capsule-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Capsule application logic: repository contract, library queries, lifecycle policy, and context-prompt composition (Documents 02, 08, 10).",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "//": "Build, typecheck, and test are orchestrated from the repository root. See root package.json.",
+  "dependencies": {
+    "@context-capsule/capsule-schema": "workspace:*"
+  },
+  "devDependencies": {}
+}

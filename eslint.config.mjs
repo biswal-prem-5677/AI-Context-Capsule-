@@ -115,6 +115,74 @@ export default tseslint.config(
     },
   },
 
+  // Document 14 §2: capsule-core may depend on the schema and nothing else. It holds the
+  // logic every surface shares, so a DOM, Chrome, or network import here would quietly
+  // make that logic un-shareable — and would put storage access back inside core, which
+  // Document 07 §6 places in the extension application layer.
+  {
+    files: ['packages/capsule-core/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                'react',
+                'react-*',
+                '@supabase/*',
+                'node:*',
+                'fs',
+                'path',
+                'crypto',
+                '**/provider-adapters/**',
+                '**/apps/**',
+              ],
+              message:
+                'capsule-core may depend on capsule-schema only (Document 14 §2). Storage, DOM, and network belong to the app layer.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-globals': [
+        'error',
+        {
+          name: 'chrome',
+          message: 'Chrome APIs may not be used in capsule-core (Document 14 §2).',
+        },
+        {
+          name: 'window',
+          message: 'DOM globals may not be used in capsule-core (Document 14 §2).',
+        },
+        {
+          name: 'document',
+          message: 'DOM globals may not be used in capsule-core (Document 14 §2).',
+        },
+        {
+          name: 'process',
+          message: 'Node built-ins may not be used in capsule-core (Document 14 §2).',
+        },
+        {
+          name: 'Buffer',
+          message: 'Node built-ins may not be used in capsule-core (Document 14 §2).',
+        },
+        {
+          name: 'indexedDB',
+          message:
+            'capsule-core defines the repository contract; the IndexedDB implementation lives in the extension app (Document 07 §6).',
+        },
+        {
+          name: 'localStorage',
+          message: 'Storage APIs may not be used in capsule-core (Document 14 §2).',
+        },
+        {
+          name: 'fetch',
+          message: 'capsule-core must not perform network access (Document 14 §2).',
+        },
+      ],
+    },
+  },
+
   {
     files: ['**/*.test.ts'],
     rules: {

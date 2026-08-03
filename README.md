@@ -12,6 +12,7 @@ The V1 promise is deliberately narrow: **generate a reviewed context capsule, th
 | --- | --- |
 | Numbered documentation blueprint (Documents 00–25) | Complete and review-ready |
 | `packages/capsule-schema` — capsule types, validation, JSON and Markdown codecs, fixtures | Implemented, 206 unit tests passing |
+| `packages/capsule-core` — repository contract, library search, lifecycle policy, prompt composer | Implemented, 47 unit tests passing |
 | Workspace, quality gates, CI, contribution templates | In place; Milestone 0 closed 2026-08-03 with CI green |
 | Local capsule engine — storage, Markdown codec, prompt composer | In progress — Milestone 1, slice 1a |
 | Chrome extension UI, provider adapters, composer insertion | Not started — Milestone 1b onward |
@@ -56,9 +57,9 @@ These run today:
 | --- | --- |
 | `pnpm format:check` / `pnpm format` | Check or apply Prettier formatting |
 | `pnpm lint` / `pnpm lint:fix` | ESLint, including the Document 14 §2 package-boundary rules |
+| `pnpm build` | `tsc -b`, emits `packages/*/dist`. Runs before `typecheck` — see AD-12 in `CONTEXT.md` |
 | `pnpm typecheck` | Two separate type programs — see AD-07 in `CONTEXT.md` |
 | `pnpm test` / `pnpm test:watch` | Vitest unit tests |
-| `pnpm build` | `tsc -b`, emits `packages/*/dist` |
 | `pnpm check:docs` | Offline check that every relative document link resolves |
 | `pnpm verify` | All of the above, in order — the gate CI enforces |
 
@@ -79,7 +80,8 @@ Only the directories that exist today are listed. The full target structure, inc
 ```text
 context-capsule/
 ├─ packages/
-│  └─ capsule-schema/     # portable capsule contract: types, validation, codecs, fixtures
+│  ├─ capsule-schema/     # portable capsule contract: types, validation, codecs, fixtures
+│  └─ capsule-core/       # repository contract, library queries, lifecycle, prompt composer
 ├─ docs/                  # numbered decision records (00–25) plus retained early drafts
 ├─ scripts/               # repository tooling
 ├─ .github/               # CI workflows, issue and pull request templates
@@ -89,7 +91,7 @@ context-capsule/
 └─ OWNER_ACTIONS.md       # tasks that need the owner, not an engineer
 ```
 
-`capsule-schema` is deliberately platform-neutral: no React, Chrome APIs, Supabase, DOM, or Node built-ins, enforced by both the typecheck configuration and lint rules so the extension, dashboard, and any future server function can import it unchanged.
+`capsule-schema` is deliberately platform-neutral: no React, Chrome APIs, Supabase, DOM, or Node built-ins, enforced by both the typecheck configuration and lint rules so the extension, dashboard, and any future server function can import it unchanged. `capsule-core` may depend on the schema and nothing else, under the same enforcement — it defines the storage *contract*, while the IndexedDB implementation belongs to the extension application layer ([Document 07 §6](docs/07_browser_extension_architecture.md)).
 
 ## Contributing
 

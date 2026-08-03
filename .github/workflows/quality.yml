@@ -64,11 +64,14 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      # Build runs before typecheck because cross-package imports resolve through real
+      # pnpm workspace links to each package's emitted declarations, not a `paths` alias
+      # (see tsconfig.typecheck.json). `tsc -b` is what produces them.
+      - name: Build
+        run: pnpm build
+
       - name: Typecheck
         run: pnpm typecheck
 
       - name: Unit tests
         run: pnpm test
-
-      - name: Build
-        run: pnpm build

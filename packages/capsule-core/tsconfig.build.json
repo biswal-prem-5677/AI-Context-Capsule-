@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "//": "The reference is what lets `tsc -b` build capsule-schema first and resolve its emitted declarations here.",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "tsBuildInfoFile": "dist/.tsbuildinfo"
+  },
+  "references": [{ "path": "../capsule-schema/tsconfig.build.json" }],
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts"]
+}

@@ -20,7 +20,7 @@
     "build": "tsc -b",
     "clean": "tsc -b --clean",
     "check:docs": "node scripts/check-doc-links.mjs",
-    "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:docs",
+    "verify": "pnpm format:check && pnpm lint && pnpm build && pnpm typecheck && pnpm test && pnpm check:docs",
     "dev:extension": "node scripts/not-implemented.mjs dev:extension M2",
     "dev:dashboard": "node scripts/not-implemented.mjs dev:dashboard M5",
     "test:e2e": "node scripts/not-implemented.mjs test:e2e M2",
