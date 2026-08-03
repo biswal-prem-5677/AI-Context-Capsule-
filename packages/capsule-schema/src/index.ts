@@ -80,6 +80,13 @@ export {
 } from './json-codec.js';
 
 export {
+  MARKDOWN_SECTIONS_EXTENSION_KEY,
+  parseCapsuleMarkdown,
+  serializeCapsuleMarkdown,
+  type ParseCapsuleMarkdownOptions,
+} from './markdown-codec.js';
+
+export {
   createCapsule,
   redactCapsuleForExport,
   systemCapsuleEnvironment,

@@ -12,10 +12,10 @@
 
 | Deliverable | State |
 | --- | --- |
-| Markdown codec in `capsule-schema` (Document 10 §6, both directions) | Not started |
+| Markdown codec in `capsule-schema` (Document 10 §6, both directions) | Done — 24 unit tests; round trip, escaping, alias headings, unknown sections, oversized input |
 | `capsule-core` package: repository contract, in-memory reference repository, library search/sort, lifecycle policy, prompt composer | Not started |
 | IndexedDB repository in `apps/extension/src/storage` (Document 07 §6, Document 08 §3) | Not started |
-| Third typecheck program for the extension app (AD-11) | Not started |
+| Third typecheck program for the extension app | Not started — will be recorded as AD-12 |
 
 **Deferred to slice 1b:** popup library, capsule editor, options/local-data UI, and the extension bundler decision. `pnpm dev:extension` remains a deliberate non-zero stub until then.
 
@@ -138,6 +138,7 @@ Resolved on 2026-08-03: the 1A scope and the 1B/1C gates were approved (see Conf
 | AD-08 | `capsule-schema` reads WHATWG globals off `globalThis` through narrow local interfaces | `TextEncoder`/`URL`/`crypto` exist in every target runtime but are typed only in `lib.dom`/`@types/node`; loading either would also grant `fetch`, `localStorage`, and `document` to the portable contract package. See `src/text.ts`, `src/operations.ts`; [14 §2](docs/14_project_structure.md) |
 | AD-09 | Document link checking is a local offline script, not a third-party link-checker action | `scripts/check-doc-links.mjs` resolves relative links against the filesystem and never requests an external URL. A checker that hits live URLs fails on someone else's outage, and a red build carrying no information about this repository trains reviewers to ignore CI. It also needs no dependency install. Verified in both directions: passes on the current tree, fails on an injected broken link; [15 §5](docs/15_github_workflow.md) |
 | AD-10 | CI installs pnpm through Corepack rather than a third-party setup action | `packageManager` in `package.json` already pins pnpm `11.18.0`, so Corepack reproduces the local version with no extra action in the supply chain. `actions/setup-node` runs *before* `corepack enable` so the shim is installed against the Node version the job actually uses; [15 §5](docs/15_github_workflow.md), [14 §6](docs/14_project_structure.md) |
+| AD-11 | Markdown codec lives in `capsule-schema`; prompt composition will live in `capsule-core` | Document 10 §11 assigns "Markdown mapping" to the schema package and Document 14 §2 assigns "composition" to core. They do not conflict once the line is drawn by *what the artifact is*: Markdown is a representation of the canonical envelope ([10 §6](docs/10_capsule_specification.md)), so it sits beside `json-codec.ts`; the prompt is explicitly "a projection, not the canonical capsule" ([10 §7](docs/10_capsule_specification.md)) and needs prioritization and budgeting, so it belongs in core. No Document 00 conflict escalation was needed |
 
 ## Important constraints
 
@@ -177,14 +178,14 @@ None accepted. Any deliberate short-term deviation from a numbered specification
 
 ## Commands
 
-Verified on Node 22.18.0 / pnpm 11.18.0 (Windows 11), 2026-08-02. Each gate was run individually via `corepack pnpm <script>` — see the environment note below — and each exited 0.
+Verified on Node 22.18.0 / pnpm 11.18.0 (Windows 11), 2026-08-03. Each gate was run individually via `corepack pnpm <script>` — see the environment note below — and each exited 0.
 
 | Command | Result |
 | --- | --- |
 | `pnpm format:check` | Pass — all files match Prettier style, including `.github/**` YAML |
 | `pnpm lint` | Pass — 0 problems |
 | `pnpm typecheck` | Pass — both type programs (see AD-07) |
-| `pnpm test` | Pass — 5 files, 182 tests |
+| `pnpm test` | Pass — 6 files, 206 tests |
 | `pnpm build` | Pass — `tsc -b` emits `packages/capsule-schema/dist` |
 | `pnpm check:docs` | Pass — 35 Markdown files scanned, 33 relative link targets resolved |
 | `pnpm verify` | The six above, sequenced. Not run as a single chained command on this machine (see environment note); every constituent gate passed individually |

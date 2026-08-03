@@ -11,7 +11,7 @@ The V1 promise is deliberately narrow: **generate a reviewed context capsule, th
 | Area | State |
 | --- | --- |
 | Numbered documentation blueprint (Documents 00–25) | Complete and review-ready |
-| `packages/capsule-schema` — capsule types, validation, codecs, fixtures | Implemented, 182 unit tests passing |
+| `packages/capsule-schema` — capsule types, validation, JSON and Markdown codecs, fixtures | Implemented, 206 unit tests passing |
 | Workspace, quality gates, CI, contribution templates | In place; Milestone 0 closed 2026-08-03 with CI green |
 | Local capsule engine — storage, Markdown codec, prompt composer | In progress — Milestone 1, slice 1a |
 | Chrome extension UI, provider adapters, composer insertion | Not started — Milestone 1b onward |

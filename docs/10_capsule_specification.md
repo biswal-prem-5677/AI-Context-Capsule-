@@ -93,8 +93,12 @@ Markdown is a readable interchange form with a front matter-like header and stab
 # Context Capsule: VisionX dashboard handoff
 
 Schema Version: 1.0
+Subject: VisionX SaaS dashboard
 Source: ChatGPT; captured 2026-07-29T00:00:00.000Z
+Source URL: https://chatgpt.com/c/8f1d2b7a-0000-4000-8000-000000000000
+Visible Turns: 18
 Source Excerpt: Not included
+Tags: coding, dashboard
 
 ## Goal
 Finish the dashboard authentication flow.
@@ -121,7 +125,21 @@ API and database are complete; UI auth is pending.
 - None recorded.
 ```
 
-Markdown importer recognizes the stable headings and list conventions case-insensitively. Missing/ambiguous headings become a review warning; raw HTML is treated as text, never executed. Unknown sections are offered as note/extension candidates rather than silently discarded.
+### Header fields
+
+`Schema Version`, `Source`, and `Source Excerpt` are always written. `Subject`, `Source URL`, and `Tags` appear only when the capsule has them, so an absent optional field is a missing line rather than an empty one. `Visible Turns` reports `source.visibleTurnCount`. The `Source Excerpt` line always states the disclosure status, including when nothing is included — Document 10 §5 requires an excerpt to be marked in exports, and a reader must be able to tell "no raw text here" from "this exporter does not say".
+
+When `sourceExcerpt` is present it is written as a final `## Source Excerpt` section, with each turn introduced by `**User:**` or `**Assistant:**`.
+
+### Import rules
+
+The importer recognizes the headings and list conventions case-insensitively, and also accepts the documented aliases `State`, `Decisions`, `Completed Work`, `Files`, `References`, `Next Actions`, `Next Steps`, `Questions`, and `Excerpt`. A repeated section uses the first occurrence and records an `ambiguous_section` warning. An unknown `##` section is preserved for review under `extensions.x-markdown-sections` with an `unknown_section` warning rather than silently discarded. Raw HTML is treated as text, never executed. A missing required field is reported by the shared validator against the field it belongs to, so the user is told exactly which one to complete rather than which heading was absent.
+
+Capsule text is untrusted, so any line that would otherwise read as structure — one starting `#`, `-`, `*`, `>`, or `\`, or a list item that reads exactly as the `None recorded.` placeholder — is written with a leading `\` and unescaped on import. Without this, a `goal` whose first line is `## Pending Tasks` could forge a section through an export/import cycle.
+
+### What Markdown does not preserve
+
+JSON is the lossless format. Markdown deliberately does not carry capsule identity or timestamps, so an import mints a fresh `id`, `createdAt`, and `updatedAt` — re-importing a Markdown export produces a new capsule rather than restoring the original, which is also the safe duplicate-identity behaviour required by §11. An unrecognized provider name becomes `imported` rather than a guess. Internal newlines in `title` and `subject` collapse to spaces because those are single-line header fields, and a tag containing a comma re-imports as two tags because tags share one comma-separated line. Each of these is visible in the file; none is a silent change.
 
 ## 7. Context prompt projection
 

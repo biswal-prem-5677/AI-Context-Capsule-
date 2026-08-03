@@ -60,6 +60,7 @@ Run a 3×3 manual source→target smoke matrix at release (source capture in eac
 
 - Static scans: dependency vulnerabilities, secret scanning, lint/type rules preventing unsafe rendering, manifest/permission diff review.
 - Dynamic/import: malformed JSON, invalid schema, oversized/deep input, Markdown/HTML script vectors, malicious links, Unicode/control-character cases.
+- Structure forgery through a codec round trip: capsule text that reads as Markdown structure — a heading, a list item, or the empty-list placeholder — must survive export and re-import as text and must not create, replace, or empty a field. Covered by `markdown-codec.test.ts`; extend it whenever a new escaping case is found.
 - Authorization: at least two test users; direct API attempts for list/read/update/delete other-user UUID; expired/invalid token; RLS policy regression.
 - Consent: no diagnostics/sync/smart input request before explicit consent; revoke stops future optional requests; captured logs contain no content/keys.
 - Extension isolation: message origin/sender mismatch, hostile host page DOM, service-worker restart, permission deny/revoke.

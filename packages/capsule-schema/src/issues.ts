@@ -52,6 +52,10 @@ export const CAPSULE_ISSUE_CODES = [
   'unsupported_schema_version',
   /** An extensions key was not namespaced, or shadowed a canonical field. */
   'invalid_extension_namespace',
+  /** A Markdown `##` section did not map to a capsule field (Document 10 §6). */
+  'unknown_section',
+  /** The same Markdown section appeared more than once (Document 10 §6). */
+  'ambiguous_section',
 ] as const;
 
 export type CapsuleIssueCode = (typeof CAPSULE_ISSUE_CODES)[number];
