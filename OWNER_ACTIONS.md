@@ -11,15 +11,7 @@ Everything here needs **you**, not an engineer or an AI agent. Each item is some
 
 ## A. Blocking right now
 
-These stop Milestone 0 from closing. Since the 1A scope was approved on 2026-08-03, **A1 is the only one still blocking Milestone 1 from starting** — it is a two-minute check in your browser.
-
-### A1. Confirm the first CI runs are green
-
-- [ ] Open the **Actions** tab and check the `quality`, `docs`, and `security` workflows on the latest commit on `main`.
-- **Why you:** I have no `gh` CLI and the API returns 404 from here, so I cannot see the result.
-- **Already de-risked:** every command these workflows run passes locally, and the failures that only appear on a Linux runner were reproduced and ruled out — path-case mismatches in document links, CRLF in the index, lockfile drift under `--frozen-lockfile`, a high-severity advisory, and the committed-secret pipeline. See "CI pre-flight" in [`CONTEXT.md`](CONTEXT.md). What remains genuinely unknowable from here is GitHub's side: whether Actions is enabled at all, and how the runner handles Corepack, caching, and registry access.
-- **If red:** paste the failing step's log and I will fix it.
-- **Blocks:** M0 acceptance criterion "CI green", and now the start of Milestone 1. Until this passes, M0 is not closed.
+Milestone 0 closed on 2026-08-03 when you confirmed CI green (A1, now under Resolved). **Nothing in this section blocks Milestone 1** — M1a is underway. What remains here still matters for repository governance and for the M0 definition of done in [Document 15](docs/15_github_workflow.md), and A2 changes how I push.
 
 ### A2. Enable branch protection on `main`
 
@@ -167,6 +159,13 @@ Nothing here is needed for the 1A beta. Do not let these delay it.
 ## Resolved
 
 Move items here with a date when they are done, rather than deleting them — a resolved blocker is useful history.
+
+### A1. Confirm the first CI runs are green — resolved 2026-08-03
+
+- [x] The `quality`, `docs`, and `security` workflows are green on `main`.
+- **Confirmed by the owner from the Actions tab.** I could not verify this myself: no `gh` CLI in my environment, and the GitHub API returns 404 for the repository from here.
+- **Effect:** the last Milestone 0 acceptance criterion — "CI green" in [Document 20 §2](docs/20_mvp_roadmap.md) — is met. M0 is closed and Milestone 1 has started.
+- **Standing limitation:** I still cannot observe CI. Every future run is green only when you say it is, or when the `gh` CLI becomes available here. A local `pnpm verify` pass is not a CI pass and will never be reported as one.
 
 ### A8. Approve the 1A scope and the 1B/1C gates — resolved 2026-08-03
 

@@ -12,13 +12,14 @@ The V1 promise is deliberately narrow: **generate a reviewed context capsule, th
 | --- | --- |
 | Numbered documentation blueprint (Documents 00–25) | Complete and review-ready |
 | `packages/capsule-schema` — capsule types, validation, codecs, fixtures | Implemented, 182 unit tests passing |
-| Workspace, quality gates, CI, contribution templates | In place |
-| Chrome extension, provider adapters, local library UI | Not started — Milestones 1–3 |
+| Workspace, quality gates, CI, contribution templates | In place; Milestone 0 closed 2026-08-03 with CI green |
+| Local capsule engine — storage, Markdown codec, prompt composer | In progress — Milestone 1, slice 1a |
+| Chrome extension UI, provider adapters, composer insertion | Not started — Milestone 1b onward |
 | Sync dashboard (1B), smart drafting (1C) | Not started, and separately gated |
 
 [`CONTEXT.md`](CONTEXT.md) is the authoritative current state, including open blockers and verified command results. Nothing here is claimed to work without evidence recorded there.
 
-[`OWNER_ACTIONS.md`](OWNER_ACTIONS.md) lists what currently needs a human with account access, spending authority, or a real browser — including the repository settings that Milestone 0 cannot close without.
+[`OWNER_ACTIONS.md`](OWNER_ACTIONS.md) lists what currently needs a human with account access, spending authority, or a real browser — branch protection, issue labels, and the repository security settings among them.
 
 ## V1 boundaries
 

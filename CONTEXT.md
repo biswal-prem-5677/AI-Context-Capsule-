@@ -2,11 +2,24 @@
 
 ## Current sprint
 
-**Sprint:** Milestone 0 — Verified foundation. Engineering deliverables complete; one owner-dependent item remains.  
-**Phase:** Workspace, quality gates, the capsule v1 schema package, CI workflows, and contribution templates exist and are verified locally. The 1A scope was approved on 2026-08-03. Branch protection requires the repository owner, so M0 is not formally closed.  
-**Current priority:** Confirm the first CI run is green on GitHub — the last gate before Milestone 1 — and have the repository owner apply branch protection and labels.
+**Sprint:** Milestone 1 — Local Capsule Engine, slice 1a (headless core).  
+**Phase:** Milestone 0 closed on 2026-08-03 when the owner confirmed the first `quality`, `docs`, and `security` runs were green on GitHub. M1 is split into 1a (storage, codecs, and prompt composition below the UI line) and 1b (popup, editor, and options UI, planned separately once 1a is real).  
+**Current priority:** M1a — capsule Markdown codec, the `capsule-core` package (repository contract, library queries, prompt composer), and the IndexedDB repository in the extension application layer.
 
-## Milestone 0 status
+## Milestone 1 status — slice 1a
+
+**Scope of 1a:** everything in [Document 20 §3](docs/20_mvp_roadmap.md) that sits below the UI line, fully unit- and integration-tested with no rendering layer.
+
+| Deliverable | State |
+| --- | --- |
+| Markdown codec in `capsule-schema` (Document 10 §6, both directions) | Not started |
+| `capsule-core` package: repository contract, in-memory reference repository, library search/sort, lifecycle policy, prompt composer | Not started |
+| IndexedDB repository in `apps/extension/src/storage` (Document 07 §6, Document 08 §3) | Not started |
+| Third typecheck program for the extension app (AD-11) | Not started |
+
+**Deferred to slice 1b:** popup library, capsule editor, options/local-data UI, and the extension bundler decision. `pnpm dev:extension` remains a deliberate non-zero stub until then.
+
+## Milestone 0 status — closed 2026-08-03
 
 | Deliverable | State |
 | --- | --- |
@@ -14,13 +27,15 @@
 | `capsule-schema` package: types, limits, issues, text, validate, json-codec, version, operations, fixtures | Done — 182 unit tests pass |
 | Package-boundary enforcement (Document 14 §2) | Done — typecheck program split plus `no-restricted-globals` backstop |
 | `.env.example`, `.gitignore`, editor/format config | Done |
-| CI workflows (Document 15 §5) | Done locally — `quality.yml`, `docs.yml`, `security.yml`. **Not yet observed green on GitHub** |
+| CI workflows (Document 15 §5) | Done — `quality.yml`, `docs.yml`, `security.yml` green on `main`, confirmed by the owner on 2026-08-03 |
 | Issue/PR templates, security policy (Document 15 §2/§4) | Done — 5 issue forms, `config.yml`, `pull_request_template.md`, `.github/SECURITY.md` |
 | README reflects real status and commands | Done |
-| Branch protection / required checks | **Not started** — requires repository owner |
+| Branch protection / required checks | **Not started** — requires repository owner ([`OWNER_ACTIONS.md`](OWNER_ACTIONS.md) A2) |
 | Issue labels (Document 15 §4) | **Not created** — requires repository owner; templates reference them already |
 
-M0 acceptance criterion "CI green" is evidenced only after the first workflow run succeeds on GitHub. Local gate results are recorded under Commands below; a local pass is not a CI pass.
+The [Document 20 §2](docs/20_mvp_roadmap.md) acceptance criteria are met, including "CI green", so M0 is closed and M1 has started. Branch protection and labels are repository-governance settings that remain open owner actions; they do not gate M1 work, but A2 changes the push workflow the moment it lands.
+
+**How "CI green" was evidenced:** the owner checked the Actions tab. I cannot observe CI from this environment — there is no `gh` CLI and the GitHub API returns 404 for the repository — so every future CI claim depends on the owner reporting it. A local `pnpm verify` pass is recorded under Commands below and is never reported as a CI pass.
 
 ### CI scope deferred on purpose
 
@@ -48,7 +63,7 @@ The local gates run on Windows; CI runs on `ubuntu-latest`. Some failures can on
 
 `.nvmrc` is `22.18.0` and `packageManager` is `pnpm@11.18.0`, so `actions/setup-node` and Corepack resolve the versions used locally.
 
-**Still unverifiable from here, and the reason A1 remains open:** that workflows are enabled on the repository at all, that `corepack enable` and `actions/cache` behave on the runner, that `pnpm store path --silent` yields a usable cache path, and that the runner has registry access. Those are properties of GitHub, not of this tree. The first run remains the actual test.
+**Outcome:** the first run was green, so none of the reproduced failure modes occurred and the parts that were unverifiable from here — whether workflows were enabled at all, and how the runner handled Corepack, `actions/cache`, `pnpm store path --silent`, and registry access — behaved as intended. This section is retained as the pre-flight procedure to repeat before any future workflow change, not as an open question.
 
 ## Completed documentation
 
@@ -91,16 +106,16 @@ The owner-facing view of this table, plus every repository setting, account, pay
 | Repository license — currently `UNLICENSED`/all rights reserved, stated as such in README | Business owner | Any external contribution or reuse |
 | Supabase/Vercel account ownership, regions, backup policy, OAuth details | Technical owner | 1B deployment |
 
-Resolved: 1A scope and the 1B/1C gates were approved on 2026-08-03 — see Confirmed by the product owner above.
+Resolved on 2026-08-03: the 1A scope and the 1B/1C gates were approved (see Confirmed by the product owner above), and the owner confirmed the first CI runs green, closing Milestone 0.
 
 ## Next tasks — strict order
 
-1. Confirm the first `quality`, `docs`, and `security` workflow runs are green on GitHub; fix anything the runner surfaces that local gates could not. **This is now the only remaining gate on starting Milestone 1.**
-2. Configure branch protection, required checks, issue labels, and project tracking per Document 15 — needs the repository owner. Until branch protection exists, bootstrap direct pushes to `main` remain permitted by Document 15 §7.
-3. Review Documents 01–05 and confirm the remaining positioning decisions. The 1A **scope** is settled (2026-08-03); what is left here is vision, market positioning, UX, and design-system review, which do not block M1 implementation.
-4. Review Documents 06–12 with engineering/security owner; log any accepted changes in this file and the relevant numbered document.
-5. Begin Milestone 1 (Local Capsule Engine) once CI is confirmed green. Scope approval no longer blocks it.
-6. Do not build dashboard sync or smart drafting before 1A evidence and their explicit gates.
+1. **M1a, in order:** Markdown codec in `capsule-schema`; the `capsule-core` package; the AD-11 typecheck split; the IndexedDB repository. Each lands as its own verified commit with its documentation.
+2. Plan and build M1b — popup library, capsule editor, and options/local-data UI — after 1a has evidence. The extension bundler choice is made there, not before.
+3. Configure branch protection, required checks, issue labels, and project tracking per Document 15 — needs the repository owner. Until branch protection exists, bootstrap direct pushes to `main` remain permitted by Document 15 §7.
+4. Review Documents 01–05 and confirm the remaining positioning decisions. The 1A **scope** is settled (2026-08-03); what is left here is vision, market positioning, UX, and design-system review, which do not block M1 implementation.
+5. Review Documents 06–12 with engineering/security owner; log any accepted changes in this file and the relevant numbered document.
+6. Do not start Milestone 2 adapter work before M1 is complete, and do not build dashboard sync or smart drafting before 1A evidence and their explicit gates.
 
 ## Current priorities
 
@@ -143,7 +158,7 @@ Resolved: 1A scope and the 1B/1C gates were approved on 2026-08-03 — see Confi
 
 None open. The only code is `capsule-schema` plus repository tooling in `scripts/`; there is no extension, adapter, UI, or deployment yet. Do not interpret green gates as production readiness.
 
-The three CI workflows have passed no run on GitHub at the time of writing. Every command they invoke, plus the cross-platform failure modes listed under CI pre-flight above, passes locally against the same inputs — but a local pass is not a CI pass, and the first run is still the actual test.
+The three CI workflows are green on `main` as reported by the owner on 2026-08-03. I have no way to observe a workflow run from this environment, so CI status in this file is always owner-reported; local gate results are recorded separately under Commands and are never described as CI results.
 
 Fixed during M0 (2026-08-02): `pnpm build` and `pnpm lint` failed on unresolved `TextEncoder`/`URL` in `capsule-schema`, while `pnpm typecheck` passed on the same code — the root typecheck config saw `node_modules/@types` and the per-package build config did not. Resolved by AD-07 and AD-08. Guarded by a negative check: adding `process.env`/`Buffer` to `capsule-schema` now fails both `pnpm typecheck` and `pnpm lint`.
 
