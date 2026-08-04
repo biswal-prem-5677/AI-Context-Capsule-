@@ -1,0 +1,17 @@
+{
+  "name": "@context-capsule/extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chrome MV3 extension application layer: durable local storage today, service worker, adapters, and UI as Milestone 1b and 2 land (Document 07).",
+  "license": "UNLICENSED",
+  "type": "module",
+  "//": "No `main`, `exports`, or build output: this is an application, not a library, and the bundler choice is deliberately deferred to Milestone 1b (see CONTEXT.md). Typecheck and test are orchestrated from the repository root.",
+  "//devDependencies": "fake-indexeddb runs the real IndexedDB algorithms under Node so the storage layer is tested rather than asserted (Document 14 §6). Test-only, no install scripts, never bundled — the extension uses the browser's own IndexedDB.",
+  "dependencies": {
+    "@context-capsule/capsule-core": "workspace:*",
+    "@context-capsule/capsule-schema": "workspace:*"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6.2.5"
+  }
+}

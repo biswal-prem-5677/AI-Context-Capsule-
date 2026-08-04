@@ -105,6 +105,12 @@ No app may redefine the canonical capsule type. No component may use a provider 
 - No package executes install scripts or loads code from URL without explicit security approval.
 - Environment access is centralized in typed config modules. Public variables are explicitly prefixed and documented; server-only variables cannot be imported into browser packages.
 
+Runtime dependencies so far: none. `capsule-schema` has no dependencies at all, `capsule-core` depends only on `capsule-schema`, and the extension app depends only on those two.
+
+| Dev dependency | Owner | Use case |
+| --- | --- | --- |
+| `fake-indexeddb` (`apps/extension`) | Engineering | Runs the real IndexedDB algorithms under Node so the storage layer is tested rather than asserted. A hand-written mock only ever agrees with the implementation it was written for; transaction commit ordering, in-line key extraction, and cursor semantics are exactly where a repository gets storage wrong. Test-only, no install scripts, never bundled — the extension uses the browser's own IndexedDB. It is not Chrome, so it does not replace the live-browser checks in [Document 12](12_testing_strategy.md) |
+
 ## 7. Testing layout and fixtures
 
 - Place pure unit fixtures beside package tests; provider DOM fixtures in `packages/provider-adapters/fixtures/<provider>/<version>/` with provenance/date/sanitization note.

@@ -183,6 +183,100 @@ export default tseslint.config(
     },
   },
 
+  // Document 14 §2: the extension app may depend on core, schema, protocol, adapters, and
+  // ui. It runs in Chrome MV3, which has no Node runtime, so a Node built-in here is not a
+  // boundary violation in the abstract — it is code that would fail to load in the browser.
+  // tsconfig.typecheck.app.json is the primary gate; these rules keep working regardless of
+  // how the type programs are arranged later.
+  {
+    files: ['apps/extension/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['node:*', 'fs', 'path', 'crypto', '@supabase/*', '**/apps/dashboard/**'],
+              message:
+                'The extension runs in Chrome MV3: no Node built-ins, no cloud client, no dashboard internals (Document 14 §2).',
+            },
+          ],
+        },
+      ],
+      'no-restricted-globals': [
+        'error',
+        {
+          name: 'process',
+          message: 'Chrome MV3 has no Node runtime (Document 14 §2).',
+        },
+        {
+          name: 'Buffer',
+          message: 'Chrome MV3 has no Node runtime (Document 14 §2).',
+        },
+      ],
+    },
+  },
+
+  // Document 07 §5 and EXECUTION_RULES §5.2: provider DOM selectors and event mechanics
+  // live only inside adapter modules. Storage is the layer a provider failure must never
+  // be able to reach — the local library has to keep working when a host page changes —
+  // so the host DOM and the provider adapters are both unreachable from here.
+  {
+    files: ['apps/extension/src/storage/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                'node:*',
+                'fs',
+                'path',
+                'crypto',
+                '@supabase/*',
+                '**/adapters/**',
+                '**/provider-adapters/**',
+              ],
+              message:
+                'Storage must not reach provider adapters: a broken host layout may not break the local library (Document 07 §5).',
+            },
+          ],
+        },
+      ],
+      'no-restricted-globals': [
+        'error',
+        {
+          name: 'process',
+          message: 'Chrome MV3 has no Node runtime (Document 14 §2).',
+        },
+        {
+          name: 'Buffer',
+          message: 'Chrome MV3 has no Node runtime (Document 14 §2).',
+        },
+        {
+          name: 'document',
+          message:
+            'Host DOM access belongs in a provider adapter, not in storage (Document 07 §5).',
+        },
+        {
+          name: 'window',
+          message:
+            'Host DOM access belongs in a provider adapter, not in storage (Document 07 §5).',
+        },
+        {
+          name: 'fetch',
+          message: 'Local storage is offline by definition; 1A performs no network access.',
+        },
+        {
+          name: 'chrome',
+          message:
+            'The capsule library lives in IndexedDB, not chrome.storage (Document 07 §6). Extension APIs belong in the background and UI layers.',
+        },
+      ],
+    },
+  },
+
   {
     files: ['**/*.test.ts'],
     rules: {

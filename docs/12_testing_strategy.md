@@ -29,6 +29,10 @@ Testing follows a risk-based pyramid: fast deterministic schema/core tests at th
 
 Storage is specified once rather than tested twice. `packages/capsule-core/src/repository-contract.ts` holds the behaviour every `CapsuleRepository` must exhibit — revisions, tombstones, the undo window, and exact capsule round trip — and both the in-memory reference implementation and the extension's IndexedDB repository run that same list. Failure paths only one implementation can reach (simulated quota exhaustion, a corrupt stored record, a database that will not open) stay in the owning implementation's own test file, so the shared list keeps holding for any future store.
 
+The IndexedDB repository is tested against the real IndexedDB algorithms under `fake-indexeddb`, not a hand-written mock: transaction commit ordering, in-line key extraction, and cursor semantics are precisely where a repository gets storage wrong, and a mock agrees with whatever the implementation happens to do. Each test constructs its own `IDBFactory`, so isolation is a property of the fixture rather than a naming convention a forgetful test can break. This is not a substitute for the live Chrome checks below — a faithful reimplementation is still not the browser, and quota behaviour in particular is simulated rather than observed.
+
+Boundary rules are verified negatively. A lint or typecheck guard that has never been seen to fail is not evidence, so each package boundary is broken deliberately and the failure confirmed before the guard is trusted; the results are recorded in `CONTEXT.md`.
+
 ## 3. Traceability to product requirements
 
 | PRD area | Minimum evidence |

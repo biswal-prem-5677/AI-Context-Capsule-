@@ -12,9 +12,10 @@ The V1 promise is deliberately narrow: **generate a reviewed context capsule, th
 | --- | --- |
 | Numbered documentation blueprint (Documents 00–25) | Complete and review-ready |
 | `packages/capsule-schema` — capsule types, validation, JSON and Markdown codecs, fixtures | Implemented, 206 unit tests passing |
-| `packages/capsule-core` — repository contract, library search, lifecycle policy, prompt composer | Implemented, 47 unit tests passing |
+| `packages/capsule-core` — repository contract, library search, lifecycle policy, prompt composer | Implemented, 53 unit tests passing |
+| `apps/extension/src/storage` — durable IndexedDB capsule repository | Implemented, 76 unit tests passing. Not yet run in a real browser |
 | Workspace, quality gates, CI, contribution templates | In place; Milestone 0 closed 2026-08-03 with CI green |
-| Local capsule engine — storage, Markdown codec, prompt composer | In progress — Milestone 1, slice 1a |
+| Local capsule engine — storage, Markdown codec, prompt composer | Complete — Milestone 1, slice 1a, closed 2026-08-04 |
 | Chrome extension UI, provider adapters, composer insertion | Not started — Milestone 1b onward |
 | Sync dashboard (1B), smart drafting (1C) | Not started, and separately gated |
 
@@ -58,7 +59,7 @@ These run today:
 | `pnpm format:check` / `pnpm format` | Check or apply Prettier formatting |
 | `pnpm lint` / `pnpm lint:fix` | ESLint, including the Document 14 §2 package-boundary rules |
 | `pnpm build` | `tsc -b`, emits `packages/*/dist`. Runs before `typecheck` — see AD-12 in `CONTEXT.md` |
-| `pnpm typecheck` | Two separate type programs — see AD-07 in `CONTEXT.md` |
+| `pnpm typecheck` | Three separate type programs — packages, extension app, tests. See AD-07 and AD-13 in `CONTEXT.md` |
 | `pnpm test` / `pnpm test:watch` | Vitest unit tests |
 | `pnpm check:docs` | Offline check that every relative document link resolves |
 | `pnpm verify` | All of the above, in order — the gate CI enforces |
@@ -82,6 +83,9 @@ context-capsule/
 ├─ packages/
 │  ├─ capsule-schema/     # portable capsule contract: types, validation, codecs, fixtures
 │  └─ capsule-core/       # repository contract, library queries, lifecycle, prompt composer
+├─ apps/
+│  └─ extension/src/      # Chrome MV3 application layer
+│     └─ storage/         # the durable IndexedDB capsule repository
 ├─ docs/                  # numbered decision records (00–25) plus retained early drafts
 ├─ scripts/               # repository tooling
 ├─ .github/               # CI workflows, issue and pull request templates
@@ -92,6 +96,10 @@ context-capsule/
 ```
 
 `capsule-schema` is deliberately platform-neutral: no React, Chrome APIs, Supabase, DOM, or Node built-ins, enforced by both the typecheck configuration and lint rules so the extension, dashboard, and any future server function can import it unchanged. `capsule-core` may depend on the schema and nothing else, under the same enforcement — it defines the storage *contract*, while the IndexedDB implementation belongs to the extension application layer ([Document 07 §6](docs/07_browser_extension_architecture.md)).
+
+That split is why `pnpm typecheck` runs three programs rather than one. The extension needs `lib.dom` to type IndexedDB; adding DOM to the program that also holds the two packages would hand them `document`, `window`, and `fetch` and remove the only mechanical proof that they stay portable. The extension gets its own program with DOM and no Node, so a `process.env` reference in browser code fails a gate instead of failing at load time in a user's browser. Each boundary is verified by deliberately breaking it — see "Boundary checks" in [`CONTEXT.md`](CONTEXT.md).
+
+Storage is specified once and implemented twice. `capsule-core` holds the behaviour every `CapsuleRepository` must exhibit as an executable, framework-free list; the in-memory reference used by core's own tests and the extension's real IndexedDB repository both run it, so the two cannot drift apart unnoticed. The IndexedDB repository is tested against real IndexedDB algorithms under `fake-indexeddb` rather than a hand-written mock, because a mock only ever agrees with the implementation it was written for.
 
 ## Contributing
 

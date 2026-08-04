@@ -1,15 +1,21 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "//": [
-    "Gate 2 of 2: test files and repository tooling, which legitimately run under Node.",
+    "Gate 2 of 3: test files and repository tooling, which legitimately run under Node.",
     "",
     "This program declares `types: [\"node\"]` because vitest pulls the Node ambient",
     "declarations in regardless; naming it here makes the dependency intentional instead",
     "of incidental. Source files are included so tests can import them, which does mean",
-    "Node globals are visible to source *in this program* — gate 1 is the config that",
-    "enforces the platform-neutral boundary, and it runs first.",
+    "Node globals are visible to source *in this program* — gates 1 and 3 are the configs",
+    "that enforce the platform boundaries, and they run first.",
     "",
-    "Both gates run in sequence under `pnpm typecheck`."
+    "`lib` adds DOM for the same reason `types` adds node: the extension's storage tests",
+    "drive real IndexedDB objects, and fake-indexeddb is typed against lib.dom. This does",
+    "make `document` visible to package tests in this program; the `no-restricted-globals`",
+    "lint rules in eslint.config.mjs are the backstop that keeps it out of capsule-schema",
+    "and capsule-core regardless of how the type programs are arranged.",
+    "",
+    "All three gates run in sequence under `pnpm typecheck`."
   ],
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
@@ -17,6 +23,7 @@
     "declaration": false,
     "declarationMap": false,
     "sourceMap": false,
+    "lib": ["ES2022", "DOM"],
     "types": ["node"]
   },
   "include": ["packages/*/src/**/*.ts", "apps/*/src/**/*.ts", "e2e/**/*.ts", "vitest.config.ts"]

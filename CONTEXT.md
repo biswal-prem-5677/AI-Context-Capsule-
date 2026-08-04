@@ -4,9 +4,9 @@
 
 **Sprint:** Milestone 1 — Local Capsule Engine, slice 1a (headless core).  
 **Phase:** Milestone 0 closed on 2026-08-03 when the owner confirmed the first `quality`, `docs`, and `security` runs were green on GitHub. M1 is split into 1a (storage, codecs, and prompt composition below the UI line) and 1b (popup, editor, and options UI, planned separately once 1a is real).  
-**Current priority:** M1a — capsule Markdown codec, the `capsule-core` package (repository contract, library queries, prompt composer), and the IndexedDB repository in the extension application layer.
+**Current priority:** slice 1a is complete as of 2026-08-04. Next is planning slice 1b — popup library, capsule editor, options/local-data UI — including the extension bundler decision.
 
-## Milestone 1 status — slice 1a
+## Milestone 1 status — slice 1a complete 2026-08-04
 
 **Scope of 1a:** everything in [Document 20 §3](docs/20_mvp_roadmap.md) that sits below the UI line, fully unit- and integration-tested with no rendering layer.
 
@@ -14,10 +14,14 @@
 | --- | --- |
 | Markdown codec in `capsule-schema` (Document 10 §6, both directions) | Done — 24 unit tests; round trip, escaping, alias headings, unknown sections, oversized input |
 | `capsule-core` package: repository contract, in-memory reference repository, library search/sort, lifecycle policy, prompt composer | Done — 53 unit tests; boundary rules verified to fire on a DOM or `indexedDB` reference. Repository behaviour lives in a shared, framework-free contract suite (`src/repository-contract.ts`) that every implementation runs |
-| IndexedDB repository in `apps/extension/src/storage` (Document 07 §6, Document 08 §3) | Not started |
-| Third typecheck program for the extension app | Not started — will be recorded as AD-13 |
+| IndexedDB repository in `apps/extension/src/storage` (Document 07 §6, Document 08 §3) | Done — 76 unit tests. Runs the same 15 contract cases as the in-memory reference, against real IndexedDB algorithms under `fake-indexeddb` |
+| Third typecheck program for the extension app | Done — `tsconfig.typecheck.app.json`, recorded as AD-13 |
 
-**Deferred to slice 1b:** popup library, capsule editor, options/local-data UI, and the extension bundler decision. `pnpm dev:extension` remains a deliberate non-zero stub until then.
+**What the storage layer covers beyond the shared contract.** Each of these is a failure path only a real store can reach, so each has its own test rather than sitting in the contract list: quota exhaustion (reported as `quota_exceeded`, with the prior library intact and the next call able to succeed); a database that will not open (`unavailable`, not a thrown `DOMException`); a stored record that no longer validates; concurrent writes; and connection loss through `onversionchange`/`onclose`.
+
+**Unreadable records.** Document 08 §7 requires an unreadable record to be left untouched with a recovery message. The repository reads every stored value through `readStoredRecord` rather than casting it, so a corrupt record is excluded from the library list (one bad record must not take the whole library down), reported by `get` as `corrupt_record`, and never rewritten with a guess. It is surfaced through `IndexedDbCapsuleRepository.listUnreadable()`, repaired by saving over it — which continues the revision count rather than restarting it — and removable through `purge`. `purgeExpired` never touches one, because a deletion timestamp it cannot read is an undo window it cannot evaluate.
+
+**Deferred to slice 1b:** popup library, capsule editor, options/local-data UI, and the extension bundler decision. `pnpm dev:extension` remains a deliberate non-zero stub until then. `listUnreadable()` has no user-facing surface until the options UI lands in 1b; it is recorded under Technical debt below with an owner and a review point rather than treated as finished.
 
 ## Milestone 0 status — closed 2026-08-03
 
@@ -110,8 +114,8 @@ Resolved on 2026-08-03: the 1A scope and the 1B/1C gates were approved (see Conf
 
 ## Next tasks — strict order
 
-1. **M1a, in order:** Markdown codec in `capsule-schema`; the `capsule-core` package; the AD-11 typecheck split; the IndexedDB repository. Each lands as its own verified commit with its documentation.
-2. Plan and build M1b — popup library, capsule editor, and options/local-data UI — after 1a has evidence. The extension bundler choice is made there, not before.
+1. **M1a — complete 2026-08-04.** Markdown codec in `capsule-schema`; the `capsule-core` package; the AD-13 typecheck split; the IndexedDB repository. Each landed as its own verified commit with its documentation.
+2. **Plan and build M1b** — popup library, capsule editor, and options/local-data UI. The extension bundler choice is made there, not before. The options UI is where `listUnreadable()` gets its recovery surface (see Technical debt).
 3. Configure branch protection, required checks, issue labels, and project tracking per Document 15 — needs the repository owner. Until branch protection exists, bootstrap direct pushes to `main` remain permitted by Document 15 §7.
 4. Review Documents 01–05 and confirm the remaining positioning decisions. The 1A **scope** is settled (2026-08-03); what is left here is vision, market positioning, UX, and design-system review, which do not block M1 implementation.
 5. Review Documents 06–12 with engineering/security owner; log any accepted changes in this file and the relevant numbered document.
@@ -140,6 +144,8 @@ Resolved on 2026-08-03: the 1A scope and the 1B/1C gates were approved (see Conf
 | AD-10 | CI installs pnpm through Corepack rather than a third-party setup action | `packageManager` in `package.json` already pins pnpm `11.18.0`, so Corepack reproduces the local version with no extra action in the supply chain. `actions/setup-node` runs *before* `corepack enable` so the shim is installed against the Node version the job actually uses; [15 §5](docs/15_github_workflow.md), [14 §6](docs/14_project_structure.md) |
 | AD-11 | Markdown codec lives in `capsule-schema`; prompt composition will live in `capsule-core` | Document 10 §11 assigns "Markdown mapping" to the schema package and Document 14 §2 assigns "composition" to core. They do not conflict once the line is drawn by *what the artifact is*: Markdown is a representation of the canonical envelope ([10 §6](docs/10_capsule_specification.md)), so it sits beside `json-codec.ts`; the prompt is explicitly "a projection, not the canonical capsule" ([10 §7](docs/10_capsule_specification.md)) and needs prioritization and budgeting, so it belongs in core. No Document 00 conflict escalation was needed |
 | AD-12 | `pnpm build` runs before `pnpm typecheck`, in `verify` and in CI | `tsconfig.typecheck.json` deliberately has no `paths` mapping, so a cross-package import resolves through the real pnpm workspace link to the dependency's *emitted* declarations. `tsc -b` is what emits them. With the old order, `capsule-core` importing `capsule-schema` failed typecheck on a clean tree until something had already built. Build first also means the per-package program (which AD-07 showed can disagree with the root one) is the first thing to fail. CI keeps them as separate named steps either way |
+| AD-13 | `pnpm typecheck` runs a third type program for the extension app, and the app is removed from the first | The extension is browser code: IndexedDB, and later the content scripts and extension pages, are typed only in `lib.dom`. Gate 1 previously covered `apps/*/src` too, so making the app compile would have meant adding DOM to the program that also holds `capsule-schema` and `capsule-core` — handing `document`, `window`, `localStorage`, and `fetch` to the two packages Document 14 §2 requires to stay platform-neutral, and destroying the only mechanical proof that they are. Gate 3 (`tsconfig.typecheck.app.json`) gives the app DOM and no Node, so a `process.env` reference in the extension fails at typecheck instead of at load time in a user's browser. `lib.dom` rather than `webworker`: MV3 has both page and worker surfaces, and the APIs crossing between them are declared in DOM. Verified in both directions — see Boundary checks below; [14 §2](docs/14_project_structure.md) |
+| AD-14 | The IndexedDB repository takes an injected `IDBFactory` and owns its own connection | Injection is what lets the storage layer be tested against real IndexedDB algorithms under Node (`fake-indexeddb`) instead of a hand-written mock that agrees with whatever the implementation happens to do. The connection is cached as a *promise*, not a database, so two concurrent cold calls cannot each start an `open()` and block each other; `onversionchange` closes it so another context's upgrade is never blocked, and `onclose` drops it so a retry can reopen rather than reusing a dead handle. Read-modify-write (`save`, `softDelete`, `restore`) happens inside one transaction, which is what stops two concurrent edits from reading the same revision and both writing n+1 — covered by a test that fails with `[1, 1]` if the transaction is split; [07 §6](docs/07_browser_extension_architecture.md), [08 §3](docs/08_database_design.md) |
 
 ## Important constraints
 
@@ -158,7 +164,7 @@ Resolved on 2026-08-03: the 1A scope and the 1B/1C gates were approved (see Conf
 
 ## Known bugs
 
-None open. The only code is `capsule-schema` plus repository tooling in `scripts/`; there is no extension, adapter, UI, or deployment yet. Do not interpret green gates as production readiness.
+None open. The code is `capsule-schema`, `capsule-core`, the extension's storage layer, and repository tooling in `scripts/`. There is no service worker, adapter, UI, packaged extension, or deployment yet, and no part of this has run in a real browser — `fake-indexeddb` implements the IndexedDB algorithms faithfully enough to test against, but it is not Chrome. Do not interpret green gates as production readiness.
 
 The three CI workflows are green on `main` as reported by the owner on 2026-08-03. I have no way to observe a workflow run from this environment, so CI status in this file is always owner-reported; local gate results are recorded separately under Commands and are never described as CI results.
 
@@ -166,7 +172,12 @@ Fixed during M0 (2026-08-02): `pnpm build` and `pnpm lint` failed on unresolved 
 
 ## Technical debt
 
-None accepted. Any deliberate short-term deviation from a numbered specification requires an issue, owner, expiry/review date, and update here.
+| Item | Owner | Review point |
+| --- | --- | --- |
+| `IndexedDbCapsuleRepository.listUnreadable()` has no user-facing surface. A record that fails validation is detected, kept, and reportable, but nothing tells the user it exists — the library list simply does not show it. Document 08 §7 requires a recovery message, so the requirement is only half met | Engineering | Milestone 1b options/local-data UI. 1b is not complete until an unreadable record is visible with purge and raw-export actions |
+| Document 08 §3 lists `updatedAt`, `titleNormalized`, and `source.provider` indexes on `capsules` that version 1 deliberately does not create, and four stores (`operations`, `drafts`, `settings`, `diagnostics`) that do not exist yet. Recorded in Document 08 §3 rather than left as a silent gap | Engineering | Indexes: whenever a query needs one and Document 12 §7's 500-capsule target stops being met in memory. Stores: `drafts`/`settings` in 1b, `diagnostics` on consent, `operations` only if 1B sync opens |
+
+Anything else is not accepted debt. Any deliberate short-term deviation from a numbered specification requires an issue, owner, expiry/review date, and update here.
 
 ## Do not change list
 
@@ -179,19 +190,31 @@ None accepted. Any deliberate short-term deviation from a numbered specification
 
 ## Commands
 
-Verified on Node 22.18.0 / pnpm 11.18.0 (Windows 11), 2026-08-03. Each gate was run individually via `corepack pnpm <script>` — see the environment note below — and each exited 0.
+Verified on Node 22.18.0 / pnpm 11.18.0 (Windows 11), 2026-08-04. Each gate was run individually via `corepack pnpm <script>` — see the environment note below — and each exited 0.
 
 | Command | Result |
 | --- | --- |
 | `pnpm format:check` | Pass — all files match Prettier style, including `.github/**` YAML |
 | `pnpm lint` | Pass — 0 problems |
-| `pnpm typecheck` | Pass — both type programs (see AD-07) |
-| `pnpm test` | Pass — 10 files, 259 tests |
+| `pnpm typecheck` | Pass — all three type programs (see AD-07, AD-13) |
+| `pnpm test` | Pass — 13 files, 335 tests (`capsule-schema` 206, `capsule-core` 53, extension storage 76) |
 | `pnpm build` | Pass — `tsc -b` emits `packages/capsule-schema/dist` and `packages/capsule-core/dist` |
 | `pnpm check:docs` | Pass — 35 Markdown files scanned, 33 relative link targets resolved |
 | `pnpm verify` | The six above, sequenced — note `build` now runs before `typecheck` (AD-12). Not run as a single chained command on this machine (see environment note); every constituent gate passed individually |
 
 Not yet available; these exit non-zero on purpose with the owning milestone (`scripts/not-implemented.mjs`): `dev:extension` (M2), `test:e2e` (M2), `package:extension` (M4), `dev:dashboard` (M5).
+
+### Boundary checks — negative evidence (2026-08-04)
+
+A guard that has never been observed to fail is not evidence that it works. Each Document 14 §2 boundary was broken deliberately, the failure confirmed, and the tree restored:
+
+| Injected violation | Expected to fail | Result |
+| --- | --- | --- |
+| `process.env` in `apps/extension/src/storage/database.ts` | Gate 3 (`tsconfig.typecheck.app.json`) and lint | Both failed — 1 TypeScript error, `no-restricted-globals` |
+| `document.title` in `packages/capsule-core/src/library.ts` | Gate 1 (`tsconfig.typecheck.json`) and lint | Both failed — 1 TypeScript error, `no-restricted-globals`. This is the check AD-13 exists to preserve: it would pass if the app had been folded into gate 1 |
+| `chrome.runtime` in `apps/extension/src/storage/` | Lint (Document 07 §6 — the library lives in IndexedDB, not `chrome.storage`) | Failed with the intended message |
+
+`git status` was clean for `packages/` afterwards, so nothing from these probes was committed.
 
 Environment note: pnpm is provided through Corepack and may not be on `PATH` as a bare `pnpm` binary. `corepack pnpm <script>` works for individual scripts, but `pnpm verify` chains `pnpm` internally and needs a real `pnpm` on `PATH` — run `corepack enable` once. On this Windows machine `corepack enable` fails with `EPERM ... C:\Program Files\nodejs\yarn` because it writes shims next to the Node installation; it needs an elevated shell. This is a local environment setup step, not a repository defect, and it does not affect CI, where the `quality` workflow runs `corepack enable` on a Linux runner before installing.
 

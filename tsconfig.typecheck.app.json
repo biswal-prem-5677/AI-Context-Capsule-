@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": [
+    "Gate 3 of 3 (AD-13): shipped application source, in a browser program with no Node.",
+    "",
+    "`lib` adds DOM because this really is browser code — IndexedDB, and later the",
+    "content scripts and extension pages, are typed only there. `types` stays empty",
+    "(inherited from tsconfig.base.json) on purpose: a Chrome MV3 service worker has no",
+    "Node runtime, so a `process.env` or `Buffer` reference in the extension is a bug that",
+    "would ship, and it must fail here rather than at load time in a user's browser.",
+    "",
+    "This is deliberately not merged into gate 1. Gate 1 proves capsule-schema and",
+    "capsule-core compile with neither Node nor DOM available; folding the app in would",
+    "mean granting DOM to that program and losing the only mechanical check that the",
+    "portable packages stay portable (Document 14 §2).",
+    "",
+    "DOM rather than WebWorker: the extension has both page and worker surfaces, and the",
+    "APIs used across the boundary between them (IndexedDB, structured clone) are declared",
+    "in lib.dom. A worker-only lib would fail to type the popup and options pages.",
+    "",
+    "Like gate 1, no `paths` mapping — imports of capsule-core and capsule-schema resolve",
+    "through the real pnpm workspace links to their emitted declarations, which is why",
+    "`pnpm build` runs before `pnpm typecheck` (AD-12)."
+  ],
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["apps/*/src/**/*.ts"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+}

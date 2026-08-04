@@ -42,6 +42,20 @@ The canonical capsule payload remains a single validated envelope rather than be
 
 Local operations use a transaction whenever a capsule and its sync operation/status change together. Deleted capsules retain a temporary tombstone only for undo/sync reconciliation, then are purged on a bounded schedule.
 
+**What database version 1 actually creates (2026-08-04).** The table above is the target schema. Version 1, in `apps/extension/src/storage/database.ts`, creates the `capsules` store and nothing else, with no secondary indexes. The difference is deliberate and is tracked in `CONTEXT.md` under Technical debt rather than left as a silent gap:
+
+| Specified | In version 1 | Reason |
+| --- | --- | --- |
+| `operations` store | Absent | The optional 1B sync queue. 1B is not open, and `EXECUTION_RULES.md` §2 forbids building it as groundwork |
+| `drafts`, `settings` stores | Absent | Arrive with the editor and options UI in Milestone 1b |
+| `diagnostics` store | Absent | Only exists once a user has consented to it |
+| `updatedAt`, `titleNormalized`, `source.provider` indexes | Absent | §2 above permits indexed metadata "where it improves a defined query". There is no such query: library search and sort are pure functions over summaries in `capsule-core/src/library.ts`, sized against the 500-capsule target in [Document 12 §7](12_testing_strategy.md). Every index costs write time on every save and has to be migrated |
+| `sync.state` index and the record's sync state field | Absent | Same reason as `operations` |
+
+An empty store that nothing writes is schema surface to migrate later for no present benefit. Each is added by the milestone that gives it a reader, under a database version bump with an upgrade branch.
+
+The record shape in version 1 is `{ capsule, revision, deletedAt }`, keyed in-line on `capsule.id`. The key is read out of the envelope rather than duplicated into a sibling field, because a duplicated key is a second source of truth that can drift from the capsule it describes.
+
 ## 4. Optional cloud schema (1B)
 
 ### 4.1 Entities
@@ -102,6 +116,7 @@ Local delete: soft delete for ten-second undo, then permanent local purge. Cloud
 | Sync retry after timeout | Reuse idempotency key; server applies once. |
 | Account sign-out | Clear auth/session cache; retain local-only data and mark prior synced data according to approved UX. |
 | Schema migration | Create backup/export opportunity, migrate transactionally, leave unreadable records untouched with recovery message. |
+| Stored record fails validation on read | Never returned as a capsule and never rewritten with a guess. Excluded from the library list so one bad record cannot break the whole library, reported by `get` as `corrupt_record`, listed for recovery by `listUnreadable`, repairable by saving over it (the revision count continues rather than restarting), and removable by `purge`. The scheduled purge never touches one: a deletion timestamp that cannot be read is an undo window that cannot be evaluated. |
 
 ## 8. Security, alternatives, and implementation notes
 
