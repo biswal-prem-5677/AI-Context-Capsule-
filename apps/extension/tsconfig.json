@@ -1,10 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "//": "Editor and ESLint project service only; nothing is emitted from here. `lib` adds DOM because this is browser code — see tsconfig.typecheck.app.json for the gate that enforces it. Test files are included so typescript-eslint can type-check a *.test.ts in this app.",
+  "//": "Editor and ESLint project service only; nothing is emitted from here. `lib` adds DOM and `jsx` selects the automatic runtime because this is browser UI code — see tsconfig.typecheck.app.json for the gate that enforces both. Test files are included so typescript-eslint can type-check a *.test.ts(x) in this app, and vite.config.ts so the bundler config is linted rather than skipped.",
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "lib": ["ES2022", "DOM"]
+    "lib": ["ES2022", "DOM"],
+    "jsx": "react-jsx"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
 }

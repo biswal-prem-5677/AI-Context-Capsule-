@@ -18,6 +18,11 @@
     "APIs used across the boundary between them (IndexedDB, structured clone) are declared",
     "in lib.dom. A worker-only lib would fail to type the popup and options pages.",
     "",
+    "`jsx: react-jsx` is the automatic runtime, so a component file never imports React",
+    "just to satisfy the compiler. It stays scoped to this gate and gate 2: the two",
+    "portable packages are forbidden React by Document 14 §2, and giving their program a",
+    "JSX setting would suggest otherwise.",
+    "",
     "Like gate 1, no `paths` mapping — imports of capsule-core and capsule-schema resolve",
     "through the real pnpm workspace links to their emitted declarations, which is why",
     "`pnpm build` runs before `pnpm typecheck` (AD-12)."
@@ -28,8 +33,9 @@
     "declaration": false,
     "declarationMap": false,
     "sourceMap": false,
-    "lib": ["ES2022", "DOM"]
+    "lib": ["ES2022", "DOM"],
+    "jsx": "react-jsx"
   },
-  "include": ["apps/*/src/**/*.ts"],
-  "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+  "include": ["apps/*/src/**/*.ts", "apps/*/src/**/*.tsx"],
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts"]
 }

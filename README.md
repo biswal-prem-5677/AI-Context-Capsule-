@@ -15,8 +15,8 @@ The V1 promise is deliberately narrow: **generate a reviewed context capsule, th
 | `packages/capsule-core` — repository contract, library search, lifecycle policy, prompt composer | Implemented, 53 unit tests passing |
 | `apps/extension/src/storage` — durable IndexedDB capsule repository | Implemented, 76 unit tests passing. Not yet run in a real browser |
 | Workspace, quality gates, CI, contribution templates | In place; Milestone 0 closed 2026-08-03 with CI green |
-| Local capsule engine — storage, Markdown codec, prompt composer | Complete — Milestone 1, slice 1a, closed 2026-08-04 |
-| Chrome extension UI, provider adapters, composer insertion | Not started — Milestone 1b onward |
+| Local capsule engine — storage, Markdown codec, prompt composer, extension popup UI | Complete — Milestone 1 (slices 1a & 1b) closed 2026-08-20 |
+| Provider adapters, composer insertion | Not started — Milestone 2 onward |
 | Sync dashboard (1B), smart drafting (1C) | Not started, and separately gated |
 
 [`CONTEXT.md`](CONTEXT.md) is the authoritative current state, including open blockers and verified command results. Nothing here is claimed to work without evidence recorded there.
@@ -64,11 +64,11 @@ These run today:
 | `pnpm check:docs` | Offline check that every relative document link resolves |
 | `pnpm verify` | All of the above, in order — the gate CI enforces |
 
-These exist by name but exit non-zero on purpose, naming the milestone that will implement them:
+Available commands: `pnpm dev:extension` (Vite watch mode emitting unpacked extension). These exist by name but exit non-zero on purpose with the owning milestone:
 
 | Command | Arrives in |
 | --- | --- |
-| `pnpm dev:extension`, `pnpm test:e2e` | Milestone 2 |
+| `pnpm test:e2e` | Milestone 2 |
 | `pnpm package:extension` | Milestone 4 |
 | `pnpm dev:dashboard` | Milestone 5 |
 

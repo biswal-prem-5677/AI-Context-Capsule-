@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 
 /**
@@ -189,7 +190,7 @@ export default tseslint.config(
   // tsconfig.typecheck.app.json is the primary gate; these rules keep working regardless of
   // how the type programs are arranged later.
   {
-    files: ['apps/extension/**/*.ts'],
+    files: ['apps/extension/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -277,8 +278,25 @@ export default tseslint.config(
     },
   },
 
+  // React rules apply only where React actually runs. Scoped to `.tsx` rather than
+  // registered globally so that a hook rule can never be the reason a portable package
+  // fails lint — Document 14 §2 forbids React there, and the rules above are what say so.
+  //
+  // The two rules are listed by name rather than spread from the plugin's recommended
+  // config, for the same reason the Node globals below are listed by name: the surface
+  // this repository opts into stays visible in this file and cannot widen on a minor
+  // dependency bump.
   {
-    files: ['**/*.test.ts'],
+    files: ['**/*.tsx'],
+    plugins: { 'react-hooks': reactHooks },
+    rules: {
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'error',
+    },
+  },
+
+  {
+    files: ['**/*.test.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
     },

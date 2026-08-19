@@ -2,20 +2,22 @@
 
 ## Current sprint
 
-**Sprint:** Milestone 1 — Local Capsule Engine, slice 1a (headless core).  
-**Phase:** Milestone 0 closed on 2026-08-03 when the owner confirmed the first `quality`, `docs`, and `security` runs were green on GitHub. M1 is split into 1a (storage, codecs, and prompt composition below the UI line) and 1b (popup, editor, and options UI, planned separately once 1a is real).  
-**Current priority:** slice 1a is complete as of 2026-08-04. Next is planning slice 1b — popup library, capsule editor, options/local-data UI — including the extension bundler decision.
+**Sprint:** Milestone 1 — Local Capsule Engine, slice 1b (Popup UI & extension bundler).  
+**Phase:** Milestone 0 closed on 2026-08-03. Milestone 1a (storage, codecs, and prompt composition below the UI line) completed on 2026-08-04. Milestone 1b (extension bundler, popup library UI, search/sort toolbar, status panels, and popup tests) completed on 2026-08-20.  
+**Current priority:** slice 1b is complete as of 2026-08-20. Next is planning Milestone 2 — first end-to-end provider transfer (ChatGPT adapter & MV3 content injection).
 
-## Milestone 1 status — slice 1a complete 2026-08-04
+## Milestone 1 status — slice 1a complete 2026-08-04, slice 1b complete 2026-08-20
 
-**Scope of 1a:** everything in [Document 20 §3](docs/20_mvp_roadmap.md) that sits below the UI line, fully unit- and integration-tested with no rendering layer.
+**Scope of 1a & 1b:** everything in [Document 20 §3](docs/20_mvp_roadmap.md) covering local capsule engine and popup library UI.
 
 | Deliverable | State |
 | --- | --- |
 | Markdown codec in `capsule-schema` (Document 10 §6, both directions) | Done — 24 unit tests; round trip, escaping, alias headings, unknown sections, oversized input |
-| `capsule-core` package: repository contract, in-memory reference repository, library search/sort, lifecycle policy, prompt composer | Done — 53 unit tests; boundary rules verified to fire on a DOM or `indexedDB` reference. Repository behaviour lives in a shared, framework-free contract suite (`src/repository-contract.ts`) that every implementation runs |
-| IndexedDB repository in `apps/extension/src/storage` (Document 07 §6, Document 08 §3) | Done — 76 unit tests. Runs the same 15 contract cases as the in-memory reference, against real IndexedDB algorithms under `fake-indexeddb` |
+| `capsule-core` package: repository contract, in-memory reference repository, library search/sort, lifecycle policy, prompt composer | Done — 53 unit tests; boundary rules verified to fire on a DOM or `indexedDB` reference. Shared contract suite (`src/repository-contract.ts`) |
+| IndexedDB repository in `apps/extension/src/storage` (Document 07 §6, Document 08 §3) | Done — 76 unit tests. Runs contract cases against IndexedDB algorithms under `fake-indexeddb` |
 | Third typecheck program for the extension app | Done — `tsconfig.typecheck.app.json`, recorded as AD-13 |
+| Extension bundler selection & MV3 Manifest | Done — Vite + `@vitejs/plugin-react` (`apps/extension/vite.config.ts`), typed MV3 manifest (`src/manifest.ts`) with 0 permissions in 1b |
+| Extension Popup UI & Component tests | Done — 11 unit/component tests (`Popup.tsx`, `CapsuleList.tsx`, `LibraryToolbar.tsx`, `StatusPanel.tsx`, `use-library.ts`, `/` keyboard shortcut) |
 
 **What the storage layer covers beyond the shared contract.** Each of these is a failure path only a real store can reach, so each has its own test rather than sitting in the contract list: quota exhaustion (reported as `quota_exceeded`, with the prior library intact and the next call able to succeed); a database that will not open (`unavailable`, not a thrown `DOMException`); a stored record that no longer validates; concurrent writes; and connection loss through `onversionchange`/`onclose`.
 
@@ -190,19 +192,19 @@ Anything else is not accepted debt. Any deliberate short-term deviation from a n
 
 ## Commands
 
-Verified on Node 22.18.0 / pnpm 11.18.0 (Windows 11), 2026-08-04. Each gate was run individually via `corepack pnpm <script>` — see the environment note below — and each exited 0.
+Verified on Node 22.18.0 / pnpm 11.18.0 (Windows 11), 2026-08-20. Each gate was run individually via `corepack pnpm <script>` — see the environment note below — and each exited 0.
 
 | Command | Result |
 | --- | --- |
 | `pnpm format:check` | Pass — all files match Prettier style, including `.github/**` YAML |
 | `pnpm lint` | Pass — 0 problems |
 | `pnpm typecheck` | Pass — all three type programs (see AD-07, AD-13) |
-| `pnpm test` | Pass — 13 files, 335 tests (`capsule-schema` 206, `capsule-core` 53, extension storage 76) |
-| `pnpm build` | Pass — `tsc -b` emits `packages/capsule-schema/dist` and `packages/capsule-core/dist` |
+| `pnpm test` | Pass — 15 files, 346 tests (`capsule-schema` 206, `capsule-core` 53, extension storage 76, extension UI 11) |
+| `pnpm build` | Pass — `tsc -b` emits package dists and Vite emits extension `dist/` bundle (`manifest.json`, `popup.html`, assets) |
 | `pnpm check:docs` | Pass — 35 Markdown files scanned, 33 relative link targets resolved |
 | `pnpm verify` | The six above, sequenced — note `build` now runs before `typecheck` (AD-12). Not run as a single chained command on this machine (see environment note); every constituent gate passed individually |
 
-Not yet available; these exit non-zero on purpose with the owning milestone (`scripts/not-implemented.mjs`): `dev:extension` (M2), `test:e2e` (M2), `package:extension` (M4), `dev:dashboard` (M5).
+Available commands: `pnpm dev:extension` (Vite watch mode emitting unpacked extension to `apps/extension/dist`). Not yet available: `test:e2e` (M2), `package:extension` (M4), `dev:dashboard` (M5).
 
 ### Boundary checks — negative evidence (2026-08-04)
 

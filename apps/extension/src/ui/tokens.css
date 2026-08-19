@@ -1,0 +1,139 @@
+/*
+ * Document 05 §2 foundations, as CSS custom properties.
+ *
+ * Semantic tokens only. Components reference `--surface-base`, never `#FFFFFF`, so the
+ * dark theme is one block here rather than a per-component patch — Document 05 §3
+ * requires dark to be a complete theme, and the only way that stays true is if there is
+ * exactly one place a colour is decided.
+ *
+ * Document 05 §3 also says an explicit Light/Dark/System setting waits until the UI is
+ * mature. Until then this follows the OS preference, which needs no stored setting and
+ * therefore no `chrome.storage` permission.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Colour — Document 05 §2.1 */
+  --surface-canvas: #f8fafc;
+  --surface-base: #ffffff;
+  --surface-raised: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-default: #cbd5e1;
+  --action-primary: #4f46e5;
+  --action-primary-hover: #4338ca;
+  --status-success: #15803d;
+  --status-warning: #b45309;
+  --status-danger: #b91c1c;
+  --status-info: #0369a1;
+
+  /* Type — Document 05 §2.2 */
+  --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --text-h1-size: 20px;
+  --text-h1-line: 28px;
+  --text-h2-size: 16px;
+  --text-h2-line: 24px;
+  --text-body-size: 14px;
+  --text-body-line: 20px;
+  --text-label-size: 13px;
+  --text-label-line: 18px;
+  --text-meta-size: 12px;
+  --text-meta-line: 16px;
+  --text-code-size: 12px;
+  --text-code-line: 18px;
+
+  /* Space — Document 05 §2.3, 4px grid */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Shape and elevation — Document 05 §2.3 */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --control-height-compact: 36px;
+  --control-height-default: 40px;
+  --control-height-touch: 44px;
+  --shadow-popover: 0 12px 32px rgb(15 23 42 / 18%);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* Motion — Document 05 §6 */
+  --motion-hover: 120ms;
+  --motion-panel: 180ms;
+  --motion-dialog: 220ms;
+  --motion-ease: cubic-bezier(0, 0, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-canvas: #0f172a;
+    --surface-base: #111827;
+    --surface-raised: #1f2937;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-default: #334155;
+    --action-primary: #818cf8;
+    --action-primary-hover: #a5b4fc;
+    --status-success: #4ade80;
+    --status-warning: #fbbf24;
+    --status-danger: #f87171;
+    --status-info: #38bdf8;
+    --shadow-popover: 0 12px 32px rgb(0 0 0 / 45%);
+  }
+}
+
+/*
+ * Document 05 §6 and Document 04 §7: reduced motion removes movement but never removes
+ * the state change itself. Durations collapse to zero rather than transitions being
+ * disabled, so an element that fades in still ends up visible.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-hover: 0ms;
+    --motion-panel: 0ms;
+    --motion-dialog: 0ms;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  color: var(--text-primary);
+  background: var(--surface-canvas);
+}
+
+/*
+ * Document 05 §2.3 gives every keyboard-focusable control the same ring, and Document 05
+ * §7 requires it to be visible against its neighbours. Declared once against
+ * `:focus-visible` so no component can forget it, and never removed by a component reset.
+ */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--action-primary);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Forced-colours mode replaces the palette; keep the focus indicator system-drawn. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
+}

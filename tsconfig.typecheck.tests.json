@@ -15,6 +15,10 @@
     "lint rules in eslint.config.mjs are the backstop that keeps it out of capsule-schema",
     "and capsule-core regardless of how the type programs are arranged.",
     "",
+    "`jsx` matches gate 3 so that a component test compiles the same way the component",
+    "does. A mismatch here would let a test pass against JSX semantics the shipped build",
+    "never uses.",
+    "",
     "All three gates run in sequence under `pnpm typecheck`."
   ],
   "extends": "./tsconfig.base.json",
@@ -24,7 +28,14 @@
     "declarationMap": false,
     "sourceMap": false,
     "lib": ["ES2022", "DOM"],
-    "types": ["node"]
+    "types": ["node"],
+    "jsx": "react-jsx"
   },
-  "include": ["packages/*/src/**/*.ts", "apps/*/src/**/*.ts", "e2e/**/*.ts", "vitest.config.ts"]
+  "include": [
+    "packages/*/src/**/*.ts",
+    "apps/*/src/**/*.ts",
+    "apps/*/src/**/*.tsx",
+    "e2e/**/*.ts",
+    "vitest.config.ts"
+  ]
 }

@@ -1,0 +1,266 @@
+/*
+ * Popup stylesheet (Document 05 §4).
+ *
+ * Implements the 360px wide extension popup window layout, search toolbar,
+ * capsule list cards, status panels, and button styles using design system tokens.
+ */
+
+.popup-container {
+  width: 360px;
+  min-height: 400px;
+  max-height: 580px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+}
+
+.popup-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-default);
+  background: var(--surface-base);
+}
+
+.popup-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.popup-title {
+  margin: 0;
+  font-size: var(--text-h2-size);
+  line-height: var(--text-h2-line);
+  font-weight: 600;
+}
+
+.popup-badge {
+  font-size: var(--text-meta-size);
+  line-height: var(--text-meta-line);
+  color: var(--text-muted);
+  background: var(--surface-raised);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+}
+
+.popup-main {
+  flex: 1;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  overflow-y: auto;
+}
+
+/* Toolbar Controls */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.field-inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field-label {
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.field-input {
+  width: 100%;
+  height: var(--control-height-compact);
+  padding: 0 var(--space-3);
+  font-family: var(--font-ui);
+  font-size: var(--text-body-size);
+  color: var(--text-primary);
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+.field-input:focus {
+  border-color: var(--action-primary);
+}
+
+.chip-group {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.chip-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chip-text {
+  font-size: var(--text-meta-size);
+  line-height: var(--text-meta-line);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 9999px;
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  transition: background var(--motion-hover) var(--motion-ease);
+}
+
+.chip-input:checked + .chip-text {
+  background: var(--action-primary);
+  color: #ffffff;
+  border-color: var(--action-primary);
+}
+
+/* Capsule List */
+.capsule-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.capsule-row {
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.capsule-row-title {
+  margin: 0;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.capsule-row-meta {
+  margin: 0;
+  font-size: var(--text-meta-size);
+  line-height: var(--text-meta-line);
+  color: var(--text-muted);
+}
+
+.capsule-row-next {
+  margin: 0;
+  font-size: var(--text-meta-size);
+  line-height: var(--text-meta-line);
+  color: var(--text-secondary);
+  background: var(--surface-raised);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.capsule-row-next-label {
+  font-weight: 600;
+  color: var(--action-primary);
+}
+
+.capsule-row-tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.tag {
+  font-size: 11px;
+  line-height: 14px;
+  padding: 2px 6px;
+  background: var(--surface-raised);
+  color: var(--text-muted);
+  border-radius: 4px;
+}
+
+/* Status Panels */
+.status-panel {
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2);
+}
+
+.status-panel-danger {
+  border-color: var(--status-danger);
+}
+
+.status-panel-title {
+  margin: 0;
+  font-size: var(--text-h2-size);
+  line-height: var(--text-h2-line);
+  font-weight: 600;
+}
+
+.status-panel-danger .status-panel-title {
+  color: var(--status-danger);
+}
+
+.status-panel-detail {
+  margin: 0;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--control-height-compact);
+  padding: 0 var(--space-4);
+  font-family: var(--font-ui);
+  font-size: var(--text-label-size);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  margin-top: var(--space-2);
+}
+
+.button-secondary {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.button-secondary:hover {
+  background: var(--border-default);
+}
